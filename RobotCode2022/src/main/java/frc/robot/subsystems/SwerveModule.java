@@ -6,9 +6,25 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANAnalog;
+import com.revrobotics.CANEncoder;
+
+
+
 public class SwerveModule extends SubsystemBase {
-  /** Creates a new SwerveModule. */
-  public SwerveModule() {}
+    // motors
+    private final CANSparkMax m_driveMotor;
+    private final CANSparkMax m_turningMotor;
+  
+    // encoders
+    final CANEncoder m_driveEncoder;
+    final CANEncoder m_turningEncoder;
+    final CANAnalog m_absoluteEncoder;
+
+    public SwerveModule() {
+    
+  }
 
   @Override
   public void periodic() {
