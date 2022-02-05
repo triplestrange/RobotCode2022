@@ -34,9 +34,13 @@ replace smartDashboard with glass
 package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants; 
-import com.revrobotics.CANSparkMax; 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType; 
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -47,28 +51,28 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 
 public class Intake extends SubsystemBase {
-
-  //intializes local variables
-
-    /*Constants class has not yet been filled inwith constant values
-    so constant.intake.motor gets angry for now*/
-  private final CANSparkMax intakeMotor 
-    = new CANSparkMax(0/*intake sparkmax# */,MotorType.kBrushless);
-  private final DoubleSolenoid intakeSolenoid 
-    = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0,1); //change from null
+  private final CANSparkMax intakeMotor;
+  private final RelativeEncoder intakeEncoder;
+  private final DoubleSolenoid intakeSolenoid;
   private boolean extended = false;
+  private NetworkTable table;
+  private double speed, setpoint;
 
-  /*
-   */
   public Intake() {
-    super();
+    super();    
+    intakeMotor = new CANSparkMax(0, MotorType.kBrushless);
+    intakeEncoder = intakeMotor.getEncoder();
+    intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0,1); 
+
     intakeMotor.restoreFactoryDefaults();
     intakeMotor.setIdleMode(IdleMode.kBrake);
     intakeMotor.enableVoltageCompensation(11);
     intakeMotor.setSmartCurrentLimit(20);
-    //Add code to connect to Glass, our new dashboard
-    //that is replacing smart dashboard
     intakeMotor.burnFlash();
+
+    setpoint = 0.75;
+
+    table = NetworkTableInstance.getDefault().getTable("intake");
   }
 
   /*
@@ -92,7 +96,7 @@ public class Intake extends SubsystemBase {
   *
   *
   */
-  public void runWheels(double speed) {
+  public void runWheels() {
     intakeMotor.set(speed);
   }
 
@@ -110,11 +114,10 @@ public class Intake extends SubsystemBase {
   }
 
 
-  /*IDK the point of this but it was in the offseason
-  so i am puting it here
-  may have been a goal that was never finished
-  @Override protected void initDefaultCommand() {
-    //  TODO Auto-Generated method stub
-
-  } */
+  @Override
+  public void periodic() {
+    speed = table.getEntry("IntakeSpeedSetpoint").getDouble(setpoint);
+    table.getEntry("IntakeExtended").setBoolean(getExtended());
+    table.getEntry("IntakeSpeed").setDouble(intakeEncoder.getVelocity());
+  }
 }
