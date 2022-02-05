@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.Intake;
@@ -22,9 +24,12 @@ public class RobotContainer {
   private final Intake m_exampleSubsystem = new Intake();
 
   private final Command1 m_autoCommand = new Command1();
+  public NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    NetworkTable subsystems = inst.getTable("subsystems");
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -36,6 +41,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {}
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
