@@ -44,7 +44,7 @@ public class Shooter extends SubsystemBase {
     shooter2.burnFlash();
     shooter2.follow(shooter1);
 
-    hoodPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+    hoodPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
     m_encoder = shooter1.getEncoder();
 
     kP = 0;
@@ -84,8 +84,10 @@ public class Shooter extends SubsystemBase {
   public void setHood(int pos) {
     if (pos == 0) {
       hoodPiston.set(Value.kReverse);
+      setExtended(false);
     } else {
       hoodPiston.set(Value.kForward);
+      setExtended(true);
     }
   }
 
