@@ -38,10 +38,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType; 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-//we wont be using smart dashboard. need to import glass
-//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+
 
 
 
@@ -53,13 +53,10 @@ public class Intake extends SubsystemBase {
     /*Constants class has not yet been filled inwith constant values
     so constant.intake.motor gets angry for now*/
   private final CANSparkMax intakeMotor 
-    = new CANSparkMax(Constants.Intake.motor,MotorType.kBrushless);
+    = new CANSparkMax(0/*intake sparkmax# */,MotorType.kBrushless);
   private final DoubleSolenoid intakeSolenoid 
-    = new DoubleSolenoid(null, 0,1);
+    = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0,1); //change from null
   private boolean extended = false;
-  private double speedIn;
-  private double speedOut;
-  private double autoSpeed; //.5
 
   /*
    */
@@ -74,51 +71,29 @@ public class Intake extends SubsystemBase {
     intakeMotor.burnFlash();
   }
 
-
-  /*method to extend the intake
-  input: joystick is assignming a joystick for intake input
-    auto=true: robot is running in autonomouas
-    auto=false: robot is taking controller input
+  /*
+  * pos 0 is not extended
+  * pos 1 is extended
+  *
   */
-  public void extend (Joystick joystick, boolean auto) {
-    if (auto) {
-      intakeSolenoid.set(Value.kForward);
-      setExtended(true);
-      intakeMotor.set(autoSpeed); 
-    }
-    else {
-      //we arent using smartdashboard, will have to change this
-      //double modifier = SmartDasboard.getNumber("Intake Speed",0.45);
-      intakeSolenoid.set(Value.kForward);
-      setExtended(true);
-      double speedIn = joystick.getRawAxis(3);
-      double speedOut = joystick.getRawAxis(2);
-
-      if (speedIn > 0.1)
-          intakeMotor.set(speedIn*modifier);
-      else if (speedOut > 0.1)
-          intakeMotor.set(-speedOut);
-      else
-          intakeMotor.set(0);
-      
-    }
-
-
+  public void setIntake(int pos) {
+      if(pos==0){ //retract
+        intakeSolenoid.set(Value.kReverse);
+        setExtended(false);
+      }
+      else { //extend
+        intakeSolenoid.set(Value.kForward);
+        setExtended(true);
+      }
   }
 
-  //method to retract the intake
-  public void retract () {
-    intakeSolenoid.set(Value.kReverse);
-    setExtended(false);
-  }
-
-  public void runWheels(double speed, boolean auto) {
-    if(auto){
-      intakeMotor.set(autoSpeed);
-    }
-    else{
-      intakeMotor.set(speed);}
-
+  /*
+  * wheels will run at the same speed 
+  *
+  *
+  */
+  public void runWheels(double speed) {
+    intakeMotor.set(speed);
   }
 
 
