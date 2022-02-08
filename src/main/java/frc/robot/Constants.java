@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -13,10 +15,83 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    /*Edits by Austin, I think that this is where we put our constant variables
-      but im not confident what usually goes here so im just puting random stuff here.
-      
-    */
+    public final class SwerveConstants {
+      // Swerve Motor Controller CAN ID's
+      public static final int FL_DRIVE = 1;
+      public static final int FR_DRIVE = 2;
+      public static final int BL_DRIVE = 3;
+      public static final int BR_DRIVE = 4;
+      public static final int FL_STEER = 5;
+      public static final int FR_STEER = 6;
+      public static final int BL_STEER = 7;
+      public static final int BR_STEER = 8;
+
+      // Port which the steering encoders are plugged into
+      public static final int FL_ENCODER = 0;
+      public static final int FR_ENCODER = 1;
+      public static final int BL_ENCODER = 2;
+      public static final int BR_ENCODER = 3;
+
+      // add offsets for absolute encoders
+      public static final int FL_OFFSET = 0;
+      public static final int FR_OFFSET = 0;
+      public static final int BL_OFFSET = 0;
+      public static final int BR_OFFSET = 0;
+
+      public static final double kMaxSpeedMetersPerSecond = 4.5693;
+    }
+
+    public static final class ModuleConstants {
+      public static final double kMaxModuleAngularSpeedRadiansPerSecond = 10 * Math.PI;
+      public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 10 * Math.PI;
+  
+      public static final double kDriveEncoderCPR = (8);
+      public static final double kSteerEncoderCPR = ((100d/30)*10);
+  
+      // adjust for calibration
+      // 2/25/21 - 0.12584
+      public static final double kWheelDiameterMeters = .12935;
+      public static final double kDriveEncoderDistancePerPulse =
+          // Assumes the encoders are directly mounted on the wheel shafts
+          (kWheelDiameterMeters * Math.PI) / (double) kDriveEncoderCPR;
+  
+      public static final double kSteerEncoderDistancePerPulse =
+          // Assumes the encoders are on a 1:1 reduction with the module shaft.
+          (2 * Math.PI) / (double) kSteerEncoderCPR;
+  
+      public static final double kAbsoluteFL = (2*Math.PI)/3.332;
+      public static final double kAbsoluteFR = (2*Math.PI)/3.236;
+      public static final double kAbsoluteBL = (2*Math.PI)/3.30;
+      public static final double kAbsoluteBR = (2*Math.PI)/3.312;
+     
+      public static final int FL_ENCODER = 0;
+      public static final int FR_ENCODER = 1;
+      public static final int BL_ENCODER = 2;
+      public static final int BR_ENCODER = 3;
+  
+      public final static double FL_ENC_OFFSET = 183;
+      public final static double FR_ENC_OFFSET = 179;
+      public final static double BL_ENC_OFFSET = 221;
+      public final static double BR_ENC_OFFSET = 241;
+    }
     
+    public static final class AutoConstants {
+      public static final double kMaxSpeedMetersPerSecond = 1.5;
+      public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
+      public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+      public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+  
+      // changing here -- try raising gains further
+      public static final double kPXController = 2.8;
+      public static final double kPYController = 2.8;
+      public static final double kDXController = 0;
+      public static final double kDYController = 0;
+      public static final double kPThetaController = 2;
+  
+      // Constraint for the motion profilied robot angle controller
+      public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
+          kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+  
+    }
 
 }
