@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 /**
@@ -15,7 +17,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public final class SwerveConstants {
+    public static final class SwerveConstants {
       // Swerve Motor Controller CAN ID's
       public static final int FL_DRIVE = 1;
       public static final int FR_DRIVE = 2;
@@ -39,6 +41,25 @@ public final class Constants {
       public static final int BR_OFFSET = 0;
 
       public static final double kMaxSpeedMetersPerSecond = 4.5693;
+
+      public static final boolean kGyroReversed = false;
+      
+      // encoder's aren't reversed
+      public static final boolean frontLeftSteerEncoderReversed = false;
+      public static final boolean backLeftSteerEncoderReversed = false;
+      public static final boolean frontRightSteerEncoderReversed = false;
+      public static final boolean backRightSteerEncoderReversed = false;
+
+      // Distance between centers of right and left wheels on robot in meters
+    public static final double kTrackWidth = 0.46355;
+    //Distance between centers of right and left wheels on robot
+    public static final double kWheelBase = 0.71755;
+    //Distance between front and back wheels on robot
+
+    // kinematics constructor with module positions as arguments
+    public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+        new Translation2d(kWheelBase / 2, kTrackWidth / 2), new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+        new Translation2d(-kWheelBase / 2, kTrackWidth / 2), new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
     }
 
     public static final class ModuleConstants {

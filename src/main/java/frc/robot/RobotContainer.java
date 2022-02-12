@@ -7,11 +7,14 @@ package frc.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import frc.robot.commands.Command1;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.RunShooter;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -21,9 +24,14 @@ import frc.robot.commands.Command1;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Intake m_exampleSubsystem = new Intake();
+  private final Intake intake = new Intake();
+  private final Shooter shooter = new Shooter();
+  private final SwerveDrive swerve = new SwerveDrive();
 
-  private final Command1 m_autoCommand = new Command1();
+  public static Joystick m_driverController = new Joystick(0);
+  public static Joystick m_operatorController = new Joystick(1);
+
+  private final RunShooter shootCommand = new RunShooter(shooter);
   public NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -40,7 +48,11 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    JoystickButton y = new JoystickButton(m_operatorController, 4);
+
+    y.whenHeld(shootCommand);
+  }
 
 
   /**
@@ -50,6 +62,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return shootCommand;
   }
 }

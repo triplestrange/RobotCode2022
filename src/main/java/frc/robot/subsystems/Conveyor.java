@@ -18,9 +18,9 @@ public class Conveyor extends SubsystemBase {
   private RelativeEncoder encoder;
   private double speed;
   private NetworkTable table;
-  /** Creates a new Conveyor. */
+
   public Conveyor() {
-    motor =  new CANSparkMax(0, MotorType.kBrushless);
+    motor =  new CANSparkMax(10, MotorType.kBrushless);
     encoder = motor.getEncoder();
 
     motor.setIdleMode(IdleMode.kBrake);
@@ -38,7 +38,6 @@ public class Conveyor extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
     speed = table.getEntry("ConveyorSetpoint").getDouble(0.7);
     table.getEntry("ConveyorSpeed").setDouble(encoder.getVelocity());
   }

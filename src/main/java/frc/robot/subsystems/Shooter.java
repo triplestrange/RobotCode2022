@@ -12,28 +12,27 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
 
 public class Shooter extends SubsystemBase {
   private final CANSparkMax shooter1, shooter2;
   private SparkMaxPIDController m_pidController;
   private RelativeEncoder m_encoder;
   private final DoubleSolenoid hoodPiston;
-  private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, setpoint, cur_speed;
+  private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, setpoint;
   private boolean isExtended;
   private NetworkTable table;
   
   /** Creates a new Shooter. */
   public Shooter() {
-    shooter1 = new CANSparkMax(0, MotorType.kBrushless);
-    shooter2 = new CANSparkMax(0, MotorType.kBrushless);
+    shooter1 = new CANSparkMax(11, MotorType.kBrushless);
+    shooter2 = new CANSparkMax(12, MotorType.kBrushless);
+    
+    m_pidController = shooter1.getPIDController();
 
     shooter1.restoreFactoryDefaults();
     shooter1.setIdleMode(IdleMode.kCoast);
@@ -45,7 +44,7 @@ public class Shooter extends SubsystemBase {
     shooter2.burnFlash();
     shooter2.follow(shooter1);
 
-    hoodPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
+    hoodPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, 2, 3);
     m_encoder = shooter1.getEncoder();
 
     kP = 1;
@@ -83,6 +82,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setShooter() {
+    setpoint = table.getEntry("ShooterSetpoint").getDouble(5000.0);
+    
     m_pidController.setReference(setpoint, ControlType.kVelocity);
   }
 
@@ -115,7 +116,6 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setpoint = table.getEntry("ShooterSetpoint").getDouble(5000.0);
     table.getEntry("HoodExtended").setBoolean(getExtended());
     table.getEntry("ShooterSpeed").setDouble(m_encoder.getVelocity());
   }
