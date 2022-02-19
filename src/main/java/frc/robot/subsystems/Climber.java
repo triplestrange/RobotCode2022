@@ -5,18 +5,49 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
-  private CANSparkMax moto
-  /** Creates a new Climber. */
-  public Climber() {
+  private CANSparkMax motor1;
+  private CANSparkMax motor2;
+  private RelativeEncoder encoder1;
+  private RelativeEncoder encoder2;
+  private NetworkTable table;
+  private double speed;
 
+  /** Creates a new Climber. */
+  public Climber() {  
+    motor1 = new CANSparkMax(15, MotorType.kBrushless);
+    motor2 = new CANSparkMax(16, MotorType.kBrushless);
+    encoder1 = motor1.getEncoder();
+    encoder2 = motor2.getEncoder();
+
+    table = NetworkTableInstance.getDefault().getTable("intake");
+  }
+
+  public void moveRight() {
+    motor1.set(speed);
+  }
+
+  public void moveLeft() {
+    motor2.set(speed);
+  }
+
+  public void stop() {
+    motor1.set(0);
+    motor2.set(0);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    speed = table.getEntry("ClimberSpeed").getDouble(0.5);
+    table.getEntry("ClimbR").setDouble(encoder1.getPosition());
+    table.getEntry("ClimbL").setDouble(encoder2.getPosition());
   }
 }

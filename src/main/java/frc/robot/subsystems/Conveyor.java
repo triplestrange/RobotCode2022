@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Conveyor extends SubsystemBase {
@@ -18,6 +19,8 @@ public class Conveyor extends SubsystemBase {
   private RelativeEncoder encoder;
   private double speed;
   private NetworkTable table;
+  private DigitalInput sensor1 = new DigitalInput(9);
+  private DigitalInput sensor2 = new DigitalInput(10);
 
   public Conveyor() {
     motor =  new CANSparkMax(10, MotorType.kBrushless);
@@ -36,9 +39,17 @@ public class Conveyor extends SubsystemBase {
     motor.set(0);
   }
 
+  public void autoIndexConveyor() {
+    if (sensor2.get()) {
+      motor.set(0.5);
+    } 
+  }
+
   @Override
   public void periodic() {
     speed = table.getEntry("ConveyorSetpoint").getDouble(0.7);
     table.getEntry("ConveyorSpeed").setDouble(encoder.getVelocity());
+    table.getEntry("BallsDetectedTop").setBoolean(sensor1.get());
+    table.getEntry("BallsDetectedBot").setBoolean(sensor2.get());
   }
 }
