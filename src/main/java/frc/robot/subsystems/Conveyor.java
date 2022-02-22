@@ -13,6 +13,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Electrical;
 
 public class Conveyor extends SubsystemBase {
   private CANSparkMax motor;
@@ -23,7 +24,7 @@ public class Conveyor extends SubsystemBase {
   private DigitalInput sensor2 = new DigitalInput(10);
 
   public Conveyor() {
-    motor =  new CANSparkMax(10, MotorType.kBrushless);
+    motor =  new CANSparkMax(Electrical.conveyor, MotorType.kBrushless);
     encoder = motor.getEncoder();
 
     motor.setIdleMode(IdleMode.kBrake);
@@ -39,10 +40,14 @@ public class Conveyor extends SubsystemBase {
     motor.set(0);
   }
 
-  public void autoIndexConveyor() {
+  public void autoIndexConveyor() {  
     if (sensor2.get()) {
       motor.set(0.5);
     } 
+  }
+
+  public void initDefaultCommand() {
+    
   }
 
   @Override

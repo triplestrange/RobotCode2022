@@ -32,7 +32,7 @@ public class RobotContainer {
   public static Joystick m_operatorController = new Joystick(1);
 
   private final RunShooter shootCommand = new RunShooter(shooter);
-  public NetworkTableInstance inst = NetworkTableInstance.getDefault();
+  private NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

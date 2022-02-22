@@ -16,19 +16,22 @@ import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Electrical;
 
 public class Turret extends SubsystemBase {
   private CANSparkMax turretMotor;
   private RelativeEncoder turretEncoder;
   private SparkMaxPIDController m_turretPIDController;
-  private double kP, kFF, kI, kD, kIz, kMaxOutput, kMinOutput, setpoint;
-  private NetworkTable table;
+  private double kP, kFF, kI, kD, kIz, kMaxOutput, kMinOutput, setpointP, setpointV;
+  private NetworkTable table, limelight;
   
   /** Creates a new Turret. */
   public Turret() {
     table = NetworkTableInstance.getDefault().getTable("turret");
+    limelight = NetworkTableInstance.getDefault().getTable("limelight");
+
     
-    turretMotor = new CANSparkMax(18, MotorType.kBrushless);
+    turretMotor = new CANSparkMax(Electrical.turret, MotorType.kBrushless);
     turretMotor.restoreFactoryDefaults();
     turretMotor.setSmartCurrentLimit(30);
     turretMotor.setIdleMode(IdleMode.kBrake);
@@ -66,17 +69,43 @@ public class Turret extends SubsystemBase {
   }
 
   public void setPosition() {
-    m_turretPIDController.setReference(setpoint, ControlType.kPosition);
+    m_turretPIDController.setReference(setpointP, ControlType.kPosition);
+  }
+
+  public void setVelocity() {
+    m_turretPIDController.setReference(setpointV, ControlType.kVelocity);
+  }
+  
+  public void runRight() {
+    turretMotor.set(0.5);
+  }
+
+  public void runLeft() {
+    turretMotor.set(-0.5);
   }
 
   public void stop() {
     turretMotor.set(0);
   }
 
+  public void focusVision() {
+    boolean targetsBool = limelight.getEntry("tv").getBoolean(false);
+    if (targetsBool) {
+      double xOffset = limelight.getEntry("tx").getDouble(0.0);
+      setpointV = -xOffset;
+      setVelocity();
+    }
+  }
+  
+  public void initDefaultCommand() {
+
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setpoint = table.getEntry("TurretSetpoint").getDouble(0.0);
+    setpointP = table.getEntry("TurretSetpointP").getDouble(0.0);
+    setpointV = table.getEntry("TurretSetpointV").getDouble(0.0);
     table.getEntry("TurretPos").setDouble(turretEncoder.getPosition());
   }
 }

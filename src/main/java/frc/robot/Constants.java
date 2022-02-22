@@ -18,16 +18,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
  */
 public final class Constants {
     public static final class SwerveConstants {
-      // Swerve Motor Controller CAN ID's
-      public static final int FL_DRIVE = 1;
-      public static final int FR_DRIVE = 2;
-      public static final int BL_DRIVE = 3;
-      public static final int BR_DRIVE = 4;
-      public static final int FL_STEER = 5;
-      public static final int FR_STEER = 6;
-      public static final int BL_STEER = 7;
-      public static final int BR_STEER = 8;
-
       // Port which the steering encoders are plugged into
       public static final int FL_ENCODER = 0;
       public static final int FR_ENCODER = 1;
@@ -113,6 +103,30 @@ public final class Constants {
       public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
           kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   
+    }
+
+    public static final class Electrical {
+      // Swerve Motor Controller CAN ID's
+      public static final int FL_DRIVE = 1;
+      public static final int FR_DRIVE = 2;
+      public static final int BL_DRIVE = 3;
+      public static final int BR_DRIVE = 4;
+      public static final int FL_STEER = 5;
+      public static final int FR_STEER = 6;
+      public static final int BL_STEER = 7;
+      public static final int BR_STEER = 8;
+
+      public static final int climbL = 9;
+      public static final int climbR = 10;
+
+      public static final int shooter1 = 11;
+      public static final int shooter2 = 12;
+
+      public static final int intake = 13;
+
+      public static final int conveyor = 14;
+
+      public static final int turret = 15;
     }
 
 }

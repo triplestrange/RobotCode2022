@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Electrical;
 
 public class Shooter extends SubsystemBase {
   private final CANSparkMax shooter1, shooter2;
@@ -29,8 +30,8 @@ public class Shooter extends SubsystemBase {
   
   /** Creates a new Shooter. */
   public Shooter() {
-    shooter1 = new CANSparkMax(11, MotorType.kBrushless);
-    shooter2 = new CANSparkMax(12, MotorType.kBrushless);
+    shooter1 = new CANSparkMax(Electrical.shooter1, MotorType.kBrushless);
+    shooter2 = new CANSparkMax(Electrical.shooter2, MotorType.kBrushless);
     
     m_pidController = shooter1.getPIDController();
 
@@ -111,6 +112,10 @@ public class Shooter extends SubsystemBase {
 
   public void setExtended(boolean val) {
     isExtended = val;
+  }
+
+  public void initDefaultCommand() {
+    
   }
 
   @Override

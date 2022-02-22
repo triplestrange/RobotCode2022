@@ -5,10 +5,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Climber;
 
-public class RunTurret extends CommandBase {
-  /** Creates a new RunTurret. */
-  public RunTurret() {
+public class RunClimb extends CommandBase {
+  /** Creates a new RunClimb. */
+  public RunClimb(Climber Climb) {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

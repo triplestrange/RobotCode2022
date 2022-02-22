@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Electrical;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -25,7 +27,7 @@ public class Intake extends SubsystemBase {
 
   public Intake() {
     super();    
-    intakeMotor = new CANSparkMax(9, MotorType.kBrushless);
+    intakeMotor = new CANSparkMax(Electrical.intake, MotorType.kBrushless);
     intakeEncoder = intakeMotor.getEncoder();
     intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0,1); 
 
@@ -51,10 +53,18 @@ public class Intake extends SubsystemBase {
       }
   }
 
-  public void runWheels() {
+  public void wheelsIn() {
     intakeMotor.set(speed);
   }
+
+  public void wheelsOut() {
+    intakeMotor.set(-speed);
+  }
   
+  public void stop() {
+    intakeMotor.set(0);
+  }
+
   public boolean getExtended() {
     return extended;
   }
@@ -63,6 +73,9 @@ public class Intake extends SubsystemBase {
     this.extended = Extended;
   }
 
+  public void initDefaultCommand() {
+    
+  }
 
   @Override
   public void periodic() {

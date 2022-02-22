@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Electrical;
 import frc.robot.Constants.ModuleConstants;
 // import frc.robot.Constants.ModuleConstants;
 // import frc.robot.Constants.SwerveDriveConstants;
@@ -28,30 +29,30 @@ import frc.robot.Constants.SwerveConstants;
 public class SwerveDrive extends SubsystemBase {
   //Robot swerve modules
   private final SwerveModule m_frontLeft =
-      new SwerveModule(SwerveConstants.FL_DRIVE,
-                         SwerveConstants.FL_STEER,
+      new SwerveModule(Electrical.FL_DRIVE,
+                         Electrical.FL_STEER,
                          ModuleConstants.kAbsoluteFL,
                          SwerveConstants.frontLeftSteerEncoderReversed,
                          ModuleConstants.FL_ENC_OFFSET);
 
   private final SwerveModule m_rearLeft =
-      new SwerveModule(SwerveConstants.BL_DRIVE,
-                       SwerveConstants.BL_STEER,
+      new SwerveModule(Electrical.BL_DRIVE,
+                       Electrical.BL_STEER,
                        ModuleConstants.kAbsoluteBL,
                        SwerveConstants.backLeftSteerEncoderReversed,
                        ModuleConstants.BL_ENC_OFFSET);
 
 
   private final SwerveModule m_frontRight =
-      new SwerveModule(SwerveConstants.FR_DRIVE,
-                       SwerveConstants.FR_STEER,
+      new SwerveModule(Electrical.FR_DRIVE,
+                       Electrical.FR_STEER,
                        ModuleConstants.kAbsoluteFR,
                        SwerveConstants.frontRightSteerEncoderReversed,
                        ModuleConstants.FR_ENC_OFFSET);
 
   private final SwerveModule m_rearRight =
-      new SwerveModule(SwerveConstants.BR_DRIVE,
-                       SwerveConstants.BR_STEER,
+      new SwerveModule(Electrical.BR_DRIVE,
+                       Electrical.BR_STEER,
                        ModuleConstants.kAbsoluteBR,
                        SwerveConstants.backRightSteerEncoderReversed,
                        ModuleConstants.FR_ENC_OFFSET);

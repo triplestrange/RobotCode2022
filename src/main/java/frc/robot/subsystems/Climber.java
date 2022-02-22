@@ -11,6 +11,7 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.*;
 
 public class Climber extends SubsystemBase {
   private CANSparkMax motor1;
@@ -22,8 +23,8 @@ public class Climber extends SubsystemBase {
 
   /** Creates a new Climber. */
   public Climber() {  
-    motor1 = new CANSparkMax(15, MotorType.kBrushless);
-    motor2 = new CANSparkMax(16, MotorType.kBrushless);
+    motor1 = new CANSparkMax(Electrical.climbL, MotorType.kBrushless);
+    motor2 = new CANSparkMax(Electrical.climbR, MotorType.kBrushless);
     encoder1 = motor1.getEncoder();
     encoder2 = motor2.getEncoder();
 
@@ -43,6 +44,10 @@ public class Climber extends SubsystemBase {
     motor2.set(0);
   }
 
+  public void initDefaultCommand() {
+    
+  }
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
