@@ -5,10 +5,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 
 public class IntakeBall extends CommandBase {
   private Intake intake;
+  private Hopper hopper;
   private int wheels;
   /** Creates a new IntakeBall. */
   public IntakeBall(Intake intake, int wheels) {
@@ -28,8 +30,10 @@ public class IntakeBall extends CommandBase {
     intake.setIntake(1);
     if (wheels == -1) {
       intake.wheelsOut();
+      hopper.wheelsOut();
     } else if (wheels == 1) {
       intake.wheelsIn();
+      hopper.wheelsIn();
     }
   }
 
@@ -38,6 +42,7 @@ public class IntakeBall extends CommandBase {
   public void end(boolean interrupted) {
     intake.setIntake(0);
     intake.stop();
+    hopper.stop();
   }
 
   // Returns true when the command should end.

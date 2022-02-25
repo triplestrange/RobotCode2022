@@ -20,12 +20,15 @@ public class Conveyor extends SubsystemBase {
   private RelativeEncoder encoder;
   private double speed;
   private NetworkTable table;
-  private DigitalInput sensor1 = new DigitalInput(9);
-  private DigitalInput sensor2 = new DigitalInput(10);
+  private DigitalInput sensor1;
+  private DigitalInput sensor2;
 
   public Conveyor() {
     motor =  new CANSparkMax(Electrical.conveyor, MotorType.kBrushless);
     encoder = motor.getEncoder();
+
+    sensor1 = new DigitalInput(9);
+    sensor2 = new DigitalInput(10);
 
     motor.setIdleMode(IdleMode.kBrake);
 
@@ -36,14 +39,20 @@ public class Conveyor extends SubsystemBase {
     motor.set(speed);
   }
 
+  public void runConveyor(double newSpeed) {
+    motor.set(newSpeed);
+  }
+
   public void stopConveyor() {
     motor.set(0);
   }
 
-  public void autoIndexConveyor() {  
-    if (sensor2.get()) {
-      motor.set(0.5);
-    } 
+  public boolean getTopSensor() {
+    return sensor1.get();
+  }
+
+  public boolean getBotSensor() {
+    return sensor2.get();
   }
 
   public void initDefaultCommand() {

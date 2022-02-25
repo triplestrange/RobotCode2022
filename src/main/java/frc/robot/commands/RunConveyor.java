@@ -5,10 +5,15 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Conveyor;
 
 public class RunConveyor extends CommandBase {
+  private Conveyor conveyor;
+  private int dir;
   /** Creates a new RunConveyor. */
-  public RunConveyor() {
+  public RunConveyor(Conveyor conveyor, int dir) {
+    this.conveyor = conveyor;
+    this.dir = dir;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -18,11 +23,19 @@ public class RunConveyor extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    if (dir == -1) {
+      conveyor.runConveyor(-0.5);
+    } else if (dir == 1) {
+      conveyor.runConveyor(0.5);
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    conveyor.stopConveyor();
+  }
 
   // Returns true when the command should end.
   @Override

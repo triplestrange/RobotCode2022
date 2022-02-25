@@ -23,13 +23,11 @@ public class Turret extends SubsystemBase {
   private RelativeEncoder turretEncoder;
   private SparkMaxPIDController m_turretPIDController;
   private double kP, kFF, kI, kD, kIz, kMaxOutput, kMinOutput, setpointP, setpointV;
-  private NetworkTable table, limelight;
+  private NetworkTable table;
   
   /** Creates a new Turret. */
   public Turret() {
     table = NetworkTableInstance.getDefault().getTable("turret");
-    limelight = NetworkTableInstance.getDefault().getTable("limelight");
-
     
     turretMotor = new CANSparkMax(Electrical.turret, MotorType.kBrushless);
     turretMotor.restoreFactoryDefaults();
@@ -40,7 +38,7 @@ public class Turret extends SubsystemBase {
 
     turretMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     turretMotor.setSoftLimit(SoftLimitDirection.kReverse, -130);
-
+ 
     turretMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
 
     turretMotor.burnFlash();
@@ -88,15 +86,6 @@ public class Turret extends SubsystemBase {
     turretMotor.set(0);
   }
 
-  public void focusVision() {
-    boolean targetsBool = limelight.getEntry("tv").getBoolean(false);
-    if (targetsBool) {
-      double xOffset = limelight.getEntry("tx").getDouble(0.0);
-      setpointV = -xOffset;
-      setVelocity();
-    }
-  }
-  
   public void initDefaultCommand() {
 
   }

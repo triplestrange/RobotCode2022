@@ -80,10 +80,10 @@ public final class Constants {
       public static final int BL_ENCODER = 2;
       public static final int BR_ENCODER = 3;
   
-      public final static double FL_ENC_OFFSET = 183;
-      public final static double FR_ENC_OFFSET = 179;
-      public final static double BL_ENC_OFFSET = 221;
-      public final static double BR_ENC_OFFSET = 241;
+      public final static double FL_ENC_OFFSET = 0; // 183
+      public final static double FR_ENC_OFFSET = 0; // 179
+      public final static double BL_ENC_OFFSET = 0; // 221
+      public final static double BR_ENC_OFFSET = 0; // 241
     }
     
     public static final class AutoConstants {
@@ -127,6 +127,8 @@ public final class Constants {
       public static final int conveyor = 14;
 
       public static final int turret = 15;
+
+      public static final int hopper = 16;
     }
 
 }
