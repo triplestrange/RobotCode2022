@@ -24,19 +24,47 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Intake intake = new Intake();
-  private final Shooter shooter = new Shooter();
-  private final SwerveDrive swerve = new SwerveDrive();
+  private final Intake intake;
+  private final Shooter shooter;
+  private final SwerveDrive swerve;
+  private final Turret turret;
+  private final Conveyor conveyor;
 
-  public static Joystick m_driverController = new Joystick(0);
-  public static Joystick m_operatorController = new Joystick(1);
+  public static Joystick m_driverController;
+  public static Joystick m_operatorController;
 
-  private final RunShooter shootCommand = new RunShooter(shooter);
+  private final RunShooter shoot;
+  private final IntakeBall ballIn;
+  private final IntakeBall ballOut;
+  private final RunConveyor conveyorIn;
+  private final RunConveyor conveyorOut;
+  private final RunTurret turretLeft;
+  private final RunTurret turretRight;
+  private final DefaultDrive drive;
+
+
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    NetworkTable subsystems = inst.getTable("subsystems");
+    intake = new Intake();
+    shooter = new Shooter();
+    swerve = new SwerveDrive();
+
+    m_driverController = new Joystick(0);
+    m_operatorController = new Joystick(1);
+
+    shoot = new RunShooter(shooter);
+    ballIn = new IntakeBall(intake, 1);
+    ballOut = new IntakeBall(intake, -1);
+    conveyorIn = new RunConveyor(conveyor, 1);
+    conveyorOut = new RunConveyor(conveyor, -1);
+    turretLeft = new RunTurret(turret, -1);
+    turretRight = new RunTurret(turret, 1);
+    
+    drive = new DefaultDrive(swerve, m_driverController, 1);
+
+    swerve.setDefaultCommand(drive);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -49,9 +77,35 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    JoystickButton y = new JoystickButton(m_operatorController, 4);
+    JoystickButton opA = new JoystickButton(m_operatorController, 1);
+    JoystickButton opB = new JoystickButton(m_operatorController, 2);
+    JoystickButton opX = new JoystickButton(m_operatorController, 3);
+    JoystickButton opY = new JoystickButton(m_operatorController, 4);
+    JoystickButton oplBump = new JoystickButton(m_operatorController, 5);
+    JoystickButton oprBump = new JoystickButton(m_operatorController, 6);
+    JoystickButton oplWing = new JoystickButton(m_operatorController, 7);
+    JoystickButton oprWing = new JoystickButton(m_operatorController, 8);
+    JoystickButton oplTrig = new JoystickButton(m_operatorController, 9);
+    JoystickButton oprTrig = new JoystickButton(m_operatorController, 10);
 
-    y.whenHeld(shootCommand);
+    JoystickButton dlBump = new JoystickButton(m_driverController, 5);
+    JoystickButton drBump = new JoystickButton(m_driverController, 6);
+    JoystickButton dX = new JoystickButton(m_driverController, 3);
+    JoystickButton dA = new JoystickButton(m_driverController, 1);
+    JoystickButton dB = new JoystickButton(m_driverController, 2);
+    JoystickButton dlAnal = new JoystickButton(m_driverController, 9);
+    JoystickButton drAnal = new JoystickButton(m_driverController, 10);
+
+    opY.whileHeld(shoot);
+    oplTrig.whileHeld(ballOut);
+    oprTrig.whileHeld(ballIn);
+    oplBump.whileHeld(conveyorOut);
+    oprBump.whileHeld(conveyorIn);
+
+    dlBump.whileHeld(turretLeft);
+    drBump.whileHeld(turretRight);
+
+
   }
 
 

@@ -83,6 +83,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setShooter() {
+    // where to set the speed for shooter if change needed
     setpoint = table.getEntry("ShooterSetpoint").getDouble(5000.0);
     
     m_pidController.setReference(setpoint, ControlType.kVelocity);

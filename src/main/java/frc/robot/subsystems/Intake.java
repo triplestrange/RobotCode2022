@@ -28,6 +28,7 @@ public class Intake extends SubsystemBase {
   public Intake() {
     super();    
     intakeMotor = new CANSparkMax(Electrical.intake, MotorType.kBrushless);
+    hopperMotor = new CANSparkMax(Electrical.hopper, MotorType.kBrushless);
     intakeEncoder = intakeMotor.getEncoder();
     intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0,1); 
 
@@ -55,14 +56,17 @@ public class Intake extends SubsystemBase {
 
   public void wheelsIn() {
     intakeMotor.set(speed);
+    hopperMotor.set(speed);
   }
 
   public void wheelsOut() {
     intakeMotor.set(-speed);
+    hopperMotor.set(-speed);
   }
   
   public void stop() {
     intakeMotor.set(0);
+    hopperMotor.set(0);
   }
 
   public boolean getExtended() {
