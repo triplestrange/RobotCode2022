@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class Intake extends SubsystemBase {
   private final CANSparkMax intakeMotor;
+  private final CANSparkMax hopperMotor;
   private final RelativeEncoder intakeEncoder;
   private final DoubleSolenoid intakeSolenoid;
   private boolean extended = false;

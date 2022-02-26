@@ -9,10 +9,16 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.IntakeBall;
+import frc.robot.commands.RunConveyor;
 import frc.robot.commands.RunShooter;
+import frc.robot.commands.RunTurretManual;
+import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.Turret;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -38,8 +44,8 @@ public class RobotContainer {
   private final IntakeBall ballOut;
   private final RunConveyor conveyorIn;
   private final RunConveyor conveyorOut;
-  private final RunTurret turretLeft;
-  private final RunTurret turretRight;
+  private final RunTurretManual turretLeft;
+  private final RunTurretManual turretRight;
   private final DefaultDrive drive;
 
 
@@ -50,6 +56,8 @@ public class RobotContainer {
     intake = new Intake();
     shooter = new Shooter();
     swerve = new SwerveDrive();
+    conveyor = new Conveyor();
+    turret = new Turret();
 
     m_driverController = new Joystick(0);
     m_operatorController = new Joystick(1);
@@ -59,8 +67,8 @@ public class RobotContainer {
     ballOut = new IntakeBall(intake, -1);
     conveyorIn = new RunConveyor(conveyor, 1);
     conveyorOut = new RunConveyor(conveyor, -1);
-    turretLeft = new RunTurret(turret, -1);
-    turretRight = new RunTurret(turret, 1);
+    turretLeft = new RunTurretManual(turret, -1);
+    turretRight = new RunTurretManual(turret, 1);
     
     drive = new DefaultDrive(swerve, m_driverController, 1);
 
@@ -116,6 +124,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return shootCommand;
+    return shoot;
   }
 }
