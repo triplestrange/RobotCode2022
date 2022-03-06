@@ -10,6 +10,7 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
 
@@ -19,7 +20,7 @@ public class Climber extends SubsystemBase {
   private RelativeEncoder encoder1;
   private RelativeEncoder encoder2;
   private NetworkTable table;
-  private double speed;
+  private double speedL, speedR;
 
   /** Creates a new Climber. */
   public Climber() {  
@@ -29,19 +30,29 @@ public class Climber extends SubsystemBase {
     encoder2 = motor2.getEncoder();
 
     table = NetworkTableInstance.getDefault().getTable("intake");
+
+    periodic();
   }
 
   public void moveRight() {
-    motor1.set(speed);
+    motor1.set(speedR);
   }
 
   public void moveLeft() {
-    motor2.set(speed);
+    motor2.set(speedL);
   }
 
   public void stop() {
     motor1.set(0);
     motor2.set(0);
+  }
+
+  public void stopLeft() {
+    motor2.set(0);
+  }
+
+  public void stopRight() {
+    motor1.set(0);
   }
 
   public void initDefaultCommand() {
@@ -51,8 +62,9 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    speed = table.getEntry("ClimberSpeed").getDouble(0.5);
-    table.getEntry("ClimbR").setDouble(encoder1.getPosition());
-    table.getEntry("ClimbL").setDouble(encoder2.getPosition());
+    speedL = SmartDashboard.getNumber("ClimberSpeedL", 0.25);
+    speedR = SmartDashboard.getNumber("ClimberSpeedR", 0.25);
+    SmartDashboard.putNumber("ClimbR", encoder1.getPosition());
+    SmartDashboard.putNumber("ClimbL", encoder2.getPosition());
   }
 }

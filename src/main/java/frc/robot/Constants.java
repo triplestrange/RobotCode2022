@@ -43,7 +43,7 @@ public final class Constants {
       // Distance between centers of right and left wheels on robot in meters
     public static final double kTrackWidth = 0.46355;
     //Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = 0.71755;
+    public static final double kWheelBase = 0.59055;
     //Distance between front and back wheels on robot
 
     // kinematics constructor with module positions as arguments
@@ -57,7 +57,7 @@ public final class Constants {
       public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 10 * Math.PI;
   
       public static final double kDriveEncoderCPR = (8);
-      public static final double kSteerEncoderCPR = ((100d/30)*10);
+      public static final double kSteerEncoderCPR = ((100d/30)*9);
   
       // adjust for calibration
       // 2/25/21 - 0.12584
@@ -76,8 +76,8 @@ public final class Constants {
       public static final double kAbsoluteBR = (2*Math.PI)/3.312;
      
       public static final int FL_ENCODER = 0;
-      public static final int FR_ENCODER = 1;
-      public static final int BL_ENCODER = 2;
+      public static final int FR_ENCODER = 2;
+      public static final int BL_ENCODER = 1;
       public static final int BR_ENCODER = 3;
   
       public final static double FL_ENC_OFFSET = 0; // 183
@@ -107,28 +107,28 @@ public final class Constants {
 
     public static final class Electrical {
       // Swerve Motor Controller CAN ID's
-      public static final int FL_DRIVE = 1;
-      public static final int FR_DRIVE = 2;
-      public static final int BL_DRIVE = 3;
-      public static final int BR_DRIVE = 4;
-      public static final int FL_STEER = 5;
-      public static final int FR_STEER = 6;
-      public static final int BL_STEER = 7;
-      public static final int BR_STEER = 8;
+      public static final int FL_DRIVE = 6;
+      public static final int FR_DRIVE = 13;
+      public static final int BL_DRIVE = 5;
+      public static final int BR_DRIVE = 14;
+      public static final int FL_STEER = 7;
+      public static final int FR_STEER = 12;
+      public static final int BL_STEER = 4;
+      public static final int BR_STEER = 15;
 
-      public static final int climbL = 9;
-      public static final int climbR = 10;
+      public static final int climbL = 2;
+      public static final int climbR = 3;
 
-      public static final int shooter1 = 11;
-      public static final int shooter2 = 12;
+      public static final int shooter1 = 17;
+      public static final int shooter2 = 16;
 
-      public static final int intake = 13;
+      public static final int intake = 9;
 
-      public static final int conveyor = 14;
+      public static final int conveyor1 = 10;
+      public static final int conveyor2 = 11;
 
-      public static final int turret = 15;
+      public static final int turret = 8;
 
-      public static final int hopper = 16;
     }
 
 }

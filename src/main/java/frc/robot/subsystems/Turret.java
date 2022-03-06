@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Electrical;
 
@@ -70,6 +71,17 @@ public class Turret extends SubsystemBase {
     m_turretPIDController.setReference(setpointP, ControlType.kPosition);
   }
 
+  public void faceGoal() {
+    double heading = SmartDashboard.getNumber("heading", 1533.0);
+    double target = 0;
+
+    if (heading < 0 && heading > -180 ) {
+      target = -heading;
+    } else if (heading > 0 && heading < 180) {
+      target = 360 - heading;
+    } 
+  }
+
   public void setVelocity() {
     m_turretPIDController.setReference(setpointV, ControlType.kVelocity);
   }
@@ -93,8 +105,8 @@ public class Turret extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setpointP = table.getEntry("TurretSetpointP").getDouble(0.0);
-    setpointV = table.getEntry("TurretSetpointV").getDouble(0.0);
-    table.getEntry("TurretPos").setDouble(turretEncoder.getPosition());
+    setpointP = SmartDashboard.getNumber("TurretSetpointP", 0.0);
+    setpointV = SmartDashboard.getNumber("TurretSetpointV", 0.0);
+    SmartDashboard.putNumber("TurretPos", turretEncoder.getPosition());
   }
 }

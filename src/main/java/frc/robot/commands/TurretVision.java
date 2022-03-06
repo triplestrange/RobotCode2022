@@ -33,6 +33,8 @@ public class TurretVision extends CommandBase {
       turretTbl.getEntry("TurretSetpointP").setDouble(-xOffset);
       
       turret.setVelocity();
+    } else {
+      turret.faceGoal();
     }
   }
 

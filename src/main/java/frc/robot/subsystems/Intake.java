@@ -16,20 +16,19 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends SubsystemBase {
   private final CANSparkMax intakeMotor;
-  private final CANSparkMax hopperMotor;
   private final RelativeEncoder intakeEncoder;
   private final DoubleSolenoid intakeSolenoid;
   private boolean extended = false;
   private NetworkTable table;
-  private double speed, setpoint;
-
+  private double speedI;
+  
   public Intake() {
     super();    
     intakeMotor = new CANSparkMax(Electrical.intake, MotorType.kBrushless);
-    hopperMotor = new CANSparkMax(Electrical.hopper, MotorType.kBrushless);
     intakeEncoder = intakeMotor.getEncoder();
     intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0,1); 
 
@@ -39,9 +38,10 @@ public class Intake extends SubsystemBase {
     intakeMotor.setSmartCurrentLimit(20);
     intakeMotor.burnFlash();
 
-    setpoint = 0.75;
-
     table = NetworkTableInstance.getDefault().getTable("intake");
+    speedI = 0.5;
+
+    periodic();
   }
 
   public void setIntake(int pos) {
@@ -56,18 +56,15 @@ public class Intake extends SubsystemBase {
   }
 
   public void wheelsIn() {
-    intakeMotor.set(speed);
-    hopperMotor.set(speed);
+    intakeMotor.set(speedI);
   }
 
   public void wheelsOut() {
-    intakeMotor.set(-speed);
-    hopperMotor.set(-speed);
+    intakeMotor.set(-speedI);
   }
   
   public void stop() {
     intakeMotor.set(0);
-    hopperMotor.set(0);
   }
 
   public boolean getExtended() {
@@ -84,8 +81,8 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    speed = table.getEntry("IntakeSpeedSetpoint").getDouble(setpoint);
-    table.getEntry("IntakeExtended").setBoolean(getExtended());
-    table.getEntry("IntakeSpeed").setDouble(intakeEncoder.getVelocity());
+    speedI = SmartDashboard.getNumber("IntakeSetpoint", 0.5);
+    SmartDashboard.putBoolean("IntakeExtended", getExtended());
+    SmartDashboard.putNumber("IntakeSpeed", intakeEncoder.getVelocity());
   }
 }

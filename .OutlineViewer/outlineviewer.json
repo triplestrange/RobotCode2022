@@ -1,0 +1,15 @@
+{
+  "LiveWindow": {
+    "Intake": {
+      "open": true
+    },
+    "Ungrouped": {
+      "open": true
+    },
+    "open": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client",
+    "serverTeam": "1533"
+  }
+}
