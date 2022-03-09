@@ -31,8 +31,8 @@ public class Conveyor extends SubsystemBase {
     motor2 = new CANSparkMax(Electrical.conveyor2, MotorType.kBrushless);
     encoder2 = motor2.getEncoder();
 
-    sensor1 = new DigitalInput(9);
-    sensor2 = new DigitalInput(10);
+    sensor1 = new DigitalInput(Electrical.botSensor);
+    sensor2 = new DigitalInput(Electrical.topSensor);
 
     motor1.setIdleMode(IdleMode.kBrake);
     motor2.setIdleMode(IdleMode.kBrake);
@@ -40,6 +40,22 @@ public class Conveyor extends SubsystemBase {
     table = NetworkTableInstance.getDefault().getTable("conveyor");
 
     periodic();
+  }
+
+  public void autoConveyor() {
+    if (sensor1.get() && !sensor2.get()) {
+      motor1.set(-0.75);
+      motor2.set(0);
+    }
+    if (!sensor1.get() && sensor2.get()) {
+      runConveyor(-0.75);
+    }
+    if (sensor1.get() && sensor2.get()) {
+      runConveyor(-0.75);
+    }
+    if (!sensor1.get() && !sensor2.get()) {
+      stopConveyor();
+    }
   }
 
   public void runConveyor() {
@@ -74,7 +90,8 @@ public class Conveyor extends SubsystemBase {
     SmartDashboard.getNumber("ConveyorSetpoint", 0.7);
     SmartDashboard.getNumber("ConveyorSpeed", encoder1.getVelocity());
     SmartDashboard.getNumber("HopperSpeed", encoder2.getVelocity());
-    SmartDashboard.getBoolean("BallsDetectedTop", !sensor1.get());
-    SmartDashboard.getBoolean("BallsDetectedBot", !sensor1.get());
+    SmartDashboard.putBoolean("BallsDetectedTop", !sensor1.get());
+    SmartDashboard.putBoolean("BallsDetectedBot", !sensor2.get());
+
   }
 }

@@ -94,6 +94,9 @@ public class SwerveModule {
     m_pidController.setIZone(kIz);
     m_pidController.setFF(kFF);
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+    m_driveMotor.burnFlash();
+    m_turningMotor.burnFlash();
   }
 
   /**

@@ -9,12 +9,14 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.AutoIndexBall;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.IntakeBall;
 import frc.robot.commands.RunClimb;
 import frc.robot.commands.RunConveyor;
 import frc.robot.commands.RunShooter;
 import frc.robot.commands.RunTurretManual;
+import frc.robot.commands.FaceGoal;
 import frc.robot.commands.ToggleHood;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Conveyor;
@@ -49,6 +51,7 @@ public class RobotContainer {
   private final RunTurretManual turretLeft, turretRight;
   private final DefaultDrive drive;
   private final RunClimb runClimb;
+  private final FaceGoal facegoal;
 
 
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -75,9 +78,11 @@ public class RobotContainer {
     turretRight = new RunTurretManual(turret, 1);
     runClimb = new RunClimb(climb, m_operatorController);
     drive = new DefaultDrive(swerve, m_driverController, 1);
+    facegoal = new FaceGoal(turret);
 
     swerve.setDefaultCommand(drive);
     climb.setDefaultCommand(runClimb);
+    turret.setDefaultCommand(facegoal);
     swerve.resetEncoders();
 
     // Configure the button bindings
@@ -110,7 +115,8 @@ public class RobotContainer {
     JoystickButton dlAnal = new JoystickButton(m_driverController, 9);
     JoystickButton drAnal = new JoystickButton(m_driverController, 10);
 
-    opY.whileHeld(shoot);
+    // opY.whileHeld(shoot);
+    opY.whileHeld(new AutoIndexBall(conveyor));
     // opA.whenPressed(toggleHood);
     oplTrig.whileHeld(ballOut);
     oprTrig.whileHeld(ballIn);
@@ -125,6 +131,8 @@ public class RobotContainer {
 
     ToggleHood test = new ToggleHood(shooter);
     opA.whenPressed(test);
+
+    // button to dump in low goal
 
 
   }

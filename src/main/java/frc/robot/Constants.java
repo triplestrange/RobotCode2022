@@ -17,6 +17,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final int LIMELIGHT = 18;
+
     public static final class SwerveConstants {
       // Port which the steering encoders are plugged into
       public static final int FL_ENCODER = 0;
@@ -32,7 +34,7 @@ public final class Constants {
 
       public static final double kMaxSpeedMetersPerSecond = 4.5693;
 
-      public static final boolean kGyroReversed = false;
+      public static final boolean kGyroReversed = true;
       
       // encoder's aren't reversed
       public static final boolean frontLeftSteerEncoderReversed = false;
@@ -128,6 +130,9 @@ public final class Constants {
       public static final int conveyor2 = 11;
 
       public static final int turret = 8;
+
+      public static final int botSensor = 0;
+      public static final int topSensor = 1;
 
     }
 

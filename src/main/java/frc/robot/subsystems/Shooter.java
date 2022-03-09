@@ -54,12 +54,12 @@ public class Shooter extends SubsystemBase {
 
     m_encoder = shooter1.getEncoder();
 
-    kP = 0.00006;
-    kI = 0.00000006;
-    kD = 0;
+    kP = 0.0001;
+    kI = 0.0000000;
+    kD = 0.0000006;
     kIz = 0;
     // kFF = 0;
-    kFF = 1.0/5676.0;
+    kFF = 1.0/5000.0;
     kMaxOutput = 1;
     kMinOutput = 0.5;
     maxRPM = 5676.0;
@@ -75,7 +75,7 @@ public class Shooter extends SubsystemBase {
 
     // NetworkTables
     table = NetworkTableInstance.getDefault().getTable("shooter");
-    SmartDashboard.putNumber("ShooterSetpoint", 2500.0);
+    SmartDashboard.putNumber("ShooterSetpoint", 3500.0);
     kP = SmartDashboard.getNumber("ShooterP", 0.0);
     kI = SmartDashboard.getNumber("ShooterI", 0.0);
     kD = SmartDashboard.getNumber("ShooterD", 0.0);
@@ -121,6 +121,31 @@ public class Shooter extends SubsystemBase {
     }
   }
 
+  public void visionShoot() {
+    // b/t +/- 24.85, +/-20.5 deg
+    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+    // double tyScaled = (ty / (20.5 * 2));
+    // m_pidController.setReference(tyScaled * 500 + 3500, ControlType.kVelocity);
+
+    Double yVals[] = {0.0, 0.0};
+    Double speed[] = {0.0, 0.0};
+
+    double val = 0;
+    for (int x = 0; x < yVals.length - 1; x++) {
+      if (ty > yVals[x] && ty < yVals[x + 1]) {
+        val = (ty - yVals[x]) / (yVals[x + 1] - yVals[x]) * (speed[x + 1] - (speed[x]) + speed[x]);
+      }
+    }
+
+    if (ty < yVals[0]) {
+      val = (ty - yVals[0]) / (yVals[1] - yVals[0]) * (speed[1] - (speed[0]) + speed[1]);
+    } else if (ty > yVals[yVals.length - 1]) {
+      val = (ty - yVals[yVals.length - 2]) / (yVals[yVals.length - 1] - yVals[yVals.length - 2]) * (speed[yVals.length - 2] - (speed[yVals.length - 1]) + speed[1]);
+    }
+
+  }
+
+  
   public void test() {
     hoodPiston.set(Value.kForward);
   }

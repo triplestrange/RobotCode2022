@@ -4,15 +4,17 @@
 
 package frc.robot.commands;
 
+import frc.robot.subsystems.Turret;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Conveyor;
 
-public class AutoIndexBall extends CommandBase {
-  private Conveyor conveyor;
-  /** Creates a new AutoIndexBall. */
-  public AutoIndexBall(Conveyor conveyor) {
-    this.conveyor = conveyor;
+public class FaceGoal extends CommandBase {
+  private Turret turret;
+  /** Creates a new FaceGoal. */
+  public FaceGoal(Turret turret) {
+    this.turret = turret;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(turret);
+
   }
 
   // Called when the command is initially scheduled.
@@ -22,14 +24,12 @@ public class AutoIndexBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    conveyor.autoConveyor();
+    turret.faceGoal();
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    conveyor.stopConveyor();
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

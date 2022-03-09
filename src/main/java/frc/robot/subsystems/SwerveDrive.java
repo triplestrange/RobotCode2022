@@ -65,7 +65,7 @@ public class SwerveDrive extends SubsystemBase {
   private SwerveModuleState[] initStates;
 
   // The gyro sensor
-  private final Gyro navX = new AHRS(SPI.Port.kMXP);
+  private static final Gyro navX = new AHRS(SPI.Port.kMXP);
   boolean gyroReset;
 
   // Odometry class for tracking robot pose
@@ -203,7 +203,7 @@ public class SwerveDrive extends SubsystemBase {
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
-  public double getHeading() {
+  public static double getHeading() {
     double heading = Math.IEEEremainder(navX.getAngle(), 360) * (SwerveConstants.kGyroReversed ? -1.0 : 1.0);
     SmartDashboard.putNumber("heading", heading);
     return heading;
