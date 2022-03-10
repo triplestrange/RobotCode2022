@@ -45,7 +45,7 @@ public class SwerveModule {
    * @param driveMotorChannel   ID for the drive motor.
    * @param turningMotorChannel ID for the turning motor.
    */
-  public SwerveModule(int driveMotorChannel, int turningMotorChannel, double encoderCPR, boolean turningEncoderReversed, double angleOffset) {
+  public SwerveModule(int driveMotorChannel, int turningMotorChannel, int absoluteEncoderChannel, double encoderCPR, boolean turningEncoderReversed, double angleOffset) {
 
 
     m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
@@ -56,7 +56,7 @@ public class SwerveModule {
 
     m_driveEncoder = m_driveMotor.getEncoder();
     m_turningEncoder = m_turningMotor.getEncoder();
-    m_absoluteEncoder = new AbsoluteEncoder(driveMotorChannel - 1, angleOffset);
+    m_absoluteEncoder = new AbsoluteEncoder(absoluteEncoderChannel, angleOffset);
 
     // Set the distance per pulse for the drive encoder. We can simply use the
     // distance traveled for one rotation of the wheel divided by the encoder
@@ -94,6 +94,9 @@ public class SwerveModule {
     m_pidController.setIZone(kIz);
     m_pidController.setFF(kFF);
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+    m_driveMotor.burnFlash();
+    m_turningMotor.burnFlash();
   }
 
   /**
@@ -141,8 +144,7 @@ public class SwerveModule {
 
   public void resetEncoders() {
     m_driveEncoder.setPosition(0);
-    // m_turningEncoder.setPosition(Math.PI-m_absoluteEncoder.getPosition());
-    m_turningEncoder.setPosition(0);
+    m_turningEncoder.setPosition(-m_absoluteEncoder.getAngle());
   }
 
   /**

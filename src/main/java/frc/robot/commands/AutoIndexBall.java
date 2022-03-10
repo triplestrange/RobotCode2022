@@ -22,12 +22,7 @@ public class AutoIndexBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (conveyor.getBotSensor()) {
-      conveyor.runConveyor();
-      if (conveyor.getTopSensor()) {
-        conveyor.stopConveyor();
-      }
-    }
+    conveyor.autoConveyor();
   }
 
   // Called once the command ends or is interrupted.

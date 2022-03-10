@@ -25,9 +25,9 @@ public class RunConveyor extends CommandBase {
   @Override
   public void execute() {
     if (dir == -1) {
-      conveyor.runConveyor(-0.5);
+      conveyor.runConveyor(-0.75);
     } else if (dir == 1) {
-      conveyor.runConveyor(0.5);
+      conveyor.runConveyor(0.75);
     }
   }
 

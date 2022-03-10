@@ -31,6 +31,7 @@ public class SwerveDrive extends SubsystemBase {
   private final SwerveModule m_frontLeft =
       new SwerveModule(Electrical.FL_DRIVE,
                          Electrical.FL_STEER,
+                         ModuleConstants.FL_ENCODER,
                          ModuleConstants.kAbsoluteFL,
                          SwerveConstants.frontLeftSteerEncoderReversed,
                          ModuleConstants.FL_ENC_OFFSET);
@@ -38,6 +39,7 @@ public class SwerveDrive extends SubsystemBase {
   private final SwerveModule m_rearLeft =
       new SwerveModule(Electrical.BL_DRIVE,
                        Electrical.BL_STEER,
+                       ModuleConstants.BL_ENCODER,
                        ModuleConstants.kAbsoluteBL,
                        SwerveConstants.backLeftSteerEncoderReversed,
                        ModuleConstants.BL_ENC_OFFSET);
@@ -46,6 +48,7 @@ public class SwerveDrive extends SubsystemBase {
   private final SwerveModule m_frontRight =
       new SwerveModule(Electrical.FR_DRIVE,
                        Electrical.FR_STEER,
+                       ModuleConstants.FR_ENCODER,
                        ModuleConstants.kAbsoluteFR,
                        SwerveConstants.frontRightSteerEncoderReversed,
                        ModuleConstants.FR_ENC_OFFSET);
@@ -53,6 +56,7 @@ public class SwerveDrive extends SubsystemBase {
   private final SwerveModule m_rearRight =
       new SwerveModule(Electrical.BR_DRIVE,
                        Electrical.BR_STEER,
+                       ModuleConstants.BR_ENCODER,
                        ModuleConstants.kAbsoluteBR,
                        SwerveConstants.backRightSteerEncoderReversed,
                        ModuleConstants.FR_ENC_OFFSET);
@@ -61,7 +65,7 @@ public class SwerveDrive extends SubsystemBase {
   private SwerveModuleState[] initStates;
 
   // The gyro sensor
-  private final Gyro navX = new AHRS(SPI.Port.kMXP);
+  private static final Gyro navX = new AHRS(SPI.Port.kMXP);
   boolean gyroReset;
 
   // Odometry class for tracking robot pose
@@ -104,7 +108,11 @@ public class SwerveDrive extends SubsystemBase {
         SmartDashboard.putNumber("FLSteering", m_frontLeft.m_absoluteEncoder.getAngle());
         SmartDashboard.putNumber("FRSteering", m_frontRight.m_absoluteEncoder.getAngle());
         SmartDashboard.putNumber("BLSteering", m_rearLeft.m_absoluteEncoder.getAngle());
-        SmartDashboard.putNumber("BRSteering",m_rearRight.m_absoluteEncoder.getAngle());
+        SmartDashboard.putNumber("BRSteering", m_rearRight.m_absoluteEncoder.getAngle());
+        SmartDashboard.putNumber("FLSteerNEO", m_frontLeft.m_turningEncoder.getPosition());
+        SmartDashboard.putNumber("FRSteerNEO", m_frontRight.m_turningEncoder.getPosition());
+        SmartDashboard.putNumber("BLSteerNEO", m_rearLeft.m_turningEncoder.getPosition());
+        SmartDashboard.putNumber("BRSteerNEO", m_rearRight.m_turningEncoder.getPosition());
         SmartDashboard.putNumber("FLneo", m_frontLeft.getState().angle.getRadians());
         SmartDashboard.putNumber("FRneo", m_frontRight.getState().angle.getRadians());
         SmartDashboard.putNumber("BLneo", m_rearLeft.getState().angle.getRadians());
@@ -195,8 +203,10 @@ public class SwerveDrive extends SubsystemBase {
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
-  public double getHeading() {
-    return Math.IEEEremainder(navX.getAngle(), 360) * (SwerveConstants.kGyroReversed ? -1.0 : 1.0);
+  public static double getHeading() {
+    double heading = Math.IEEEremainder(navX.getAngle(), 360) * (SwerveConstants.kGyroReversed ? -1.0 : 1.0);
+    SmartDashboard.putNumber("heading", heading);
+    return heading;
   }
 
   /**
