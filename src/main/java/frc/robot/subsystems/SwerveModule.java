@@ -116,6 +116,11 @@ public class SwerveModule {
   public void setDesiredState(SwerveModuleState state) {
 
     double desiredDrive = state.speedMetersPerSecond/Constants.SwerveConstants.kMaxSpeedMetersPerSecond;
+
+    if (Math.abs(desiredDrive) < 0.05) {
+      m_driveMotor.set(0);
+      return;
+    }
     double desiredSteering = state.angle.getRadians();
     double currentSteering = m_turningEncoder.getPosition();
 
