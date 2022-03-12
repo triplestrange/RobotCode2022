@@ -10,6 +10,8 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
@@ -19,6 +21,7 @@ public class Climber extends SubsystemBase {
   private CANSparkMax motor2;
   private RelativeEncoder encoder1;
   private RelativeEncoder encoder2;
+  private DoubleSolenoid solenoid;
   private NetworkTable table;
   private double speedL, speedR;
 
@@ -26,6 +29,8 @@ public class Climber extends SubsystemBase {
   public Climber() {  
     motor1 = new CANSparkMax(Electrical.climbL, MotorType.kBrushless);
     motor2 = new CANSparkMax(Electrical.climbR, MotorType.kBrushless);
+    solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 9); 
+
     encoder1 = motor1.getEncoder();
     encoder2 = motor2.getEncoder();
 

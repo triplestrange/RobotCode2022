@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Intake extends SubsystemBase {
   private final CANSparkMax intakeMotor;
   private final RelativeEncoder intakeEncoder;
-  private final DoubleSolenoid intakeSolenoid;
+  private final DoubleSolenoid solenoid1, solenoid2;
   private boolean extended = false;
   private NetworkTable table;
   private double speedI;
@@ -30,7 +30,8 @@ public class Intake extends SubsystemBase {
     super();    
     intakeMotor = new CANSparkMax(Electrical.intake, MotorType.kBrushless);
     intakeEncoder = intakeMotor.getEncoder();
-    intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0,1); 
+    solenoid1 = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 2); 
+    solenoid2 = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 2); 
 
     intakeMotor.restoreFactoryDefaults();
     intakeMotor.setIdleMode(IdleMode.kBrake);
@@ -46,11 +47,13 @@ public class Intake extends SubsystemBase {
 
   public void setIntake(int pos) {
       if(pos==0){ //retract
-        intakeSolenoid.set(Value.kReverse);
+        solenoid1.set(Value.kReverse);
+        solenoid2.set(Value.kReverse);
         setExtended(false);
       }
       else { //extend
-        intakeSolenoid.set(Value.kForward);
+        solenoid1.set(Value.kForward);
+        solenoid2.set(Value.kForward);
         setExtended(true);
       }
   }
