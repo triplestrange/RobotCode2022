@@ -61,7 +61,7 @@ public class Shooter extends SubsystemBase {
     // kFF = 0;
     kFF = 1.0/5000.0;
     kMaxOutput = 1;
-    kMinOutput = 0.5;
+    kMinOutput = 0;
     maxRPM = 5676.0;
 
     m_pidController.setP(kP);

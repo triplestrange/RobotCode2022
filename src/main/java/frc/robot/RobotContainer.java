@@ -82,7 +82,7 @@ public class RobotContainer {
 
     swerve.setDefaultCommand(drive);
     climb.setDefaultCommand(runClimb);
-    turret.setDefaultCommand(facegoal);
+    // turret.setDefaultCommand(facegoal);
     swerve.resetEncoders();
 
     // Configure the button bindings
@@ -115,8 +115,8 @@ public class RobotContainer {
     JoystickButton dlAnal = new JoystickButton(m_driverController, 9);
     JoystickButton drAnal = new JoystickButton(m_driverController, 10);
 
-    // opY.whileHeld(shoot);
-    opY.whileHeld(new AutoIndexBall(conveyor));
+    opY.whileHeld(shoot);
+    opB.whileHeld(new AutoIndexBall(conveyor));
     // opA.whenPressed(toggleHood);
     oplTrig.whileHeld(ballOut);
     oprTrig.whileHeld(ballIn);

@@ -31,10 +31,10 @@ public class IntakeBall extends CommandBase {
     intake.setIntake(1);
     if (wheels == -1) {
       intake.wheelsOut();
-      conveyor.runConveyor(-0.5);
-    } else if (wheels == 1) {
-      intake.wheelsIn();
       conveyor.runConveyor(0.5);
+    } else if (wheels == 1) {
+      intake.wheelsIn(1);
+      conveyor.autoConveyor();
     }
   }
 
