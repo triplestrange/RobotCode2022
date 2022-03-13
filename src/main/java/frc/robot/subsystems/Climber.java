@@ -12,6 +12,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
@@ -24,6 +25,7 @@ public class Climber extends SubsystemBase {
   private DoubleSolenoid solenoid;
   private NetworkTable table;
   private double speedL, speedR;
+  private boolean extended;
 
   /** Creates a new Climber. */
   public Climber() {  
@@ -36,6 +38,8 @@ public class Climber extends SubsystemBase {
 
     table = NetworkTableInstance.getDefault().getTable("intake");
 
+    extended = (solenoid.get() == Value.kForward);
+
     periodic();
   }
 
@@ -45,6 +49,14 @@ public class Climber extends SubsystemBase {
 
   public void moveLeft() {
     motor2.set(speedL);
+  }
+
+  public void moveRight(double speed) {
+    motor1.set(speed);
+  }
+
+  public void moveLeft(double speed) {
+    motor2.set(speed);
   }
 
   public void stop() {
@@ -58,6 +70,36 @@ public class Climber extends SubsystemBase {
 
   public void stopRight() {
     motor1.set(0);
+  }
+
+  public void setClimber(int pos) {
+    if (pos == 0) {
+      if (getExtended()) {
+        solenoid.set(Value.kReverse);
+      }
+      setExtended(false);
+    } else if (pos == 1) {
+      if (!getExtended()) {
+        solenoid.set(Value.kForward);        
+      }
+      setExtended(true);
+    }
+  }
+
+  public void toggleClimb() {
+    if (getExtended()) {
+      solenoid.set(Value.kReverse);
+    } else {
+      solenoid.set(Value.kForward);
+    }
+  }
+
+  public boolean getExtended() {
+    return extended;
+  }
+
+  public void setExtended(boolean val) {
+    extended = val;
   }
 
   public void initDefaultCommand() {

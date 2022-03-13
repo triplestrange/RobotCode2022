@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoIndexBall;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.IntakeBall;
@@ -16,8 +17,10 @@ import frc.robot.commands.RunClimb;
 import frc.robot.commands.RunConveyor;
 import frc.robot.commands.RunShooter;
 import frc.robot.commands.RunTurretManual;
+import frc.robot.commands.ShootSpeed;
 import frc.robot.commands.FaceGoal;
 import frc.robot.commands.ToggleHood;
+import frc.robot.commands.TurretVision;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
@@ -25,6 +28,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.Turret;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -45,13 +50,17 @@ public class RobotContainer {
   public static Joystick m_driverController;
   public static Joystick m_operatorController;
 
-  private final RunShooter shoot, toggleHood;
+  private final RunShooter shoot, toggleHood, shootAuto;
   private final IntakeBall ballIn, ballOut;
   private final RunConveyor conveyorIn, conveyorOut;
+  private final AutoIndexBall autoIndex;
   private final RunTurretManual turretLeft, turretRight;
   private final DefaultDrive drive;
   private final RunClimb runClimb;
   private final FaceGoal facegoal;
+  private final TurretVision turretVision;
+
+  private final boolean autoTurret = true, autoConveyor = false;
 
 
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -68,10 +77,13 @@ public class RobotContainer {
     m_driverController = new Joystick(0);
     m_operatorController = new Joystick(1);
 
-    shoot = new RunShooter(shooter, false);
-    toggleHood = new RunShooter(shooter, true);
+    shoot = new RunShooter(shooter, false, false);
+    shootAuto = new RunShooter(shooter, true, false);
+    autoIndex = new AutoIndexBall(conveyor, shooter);
+    toggleHood = new RunShooter(shooter, false, true);
     ballIn = new IntakeBall(intake, conveyor, 1);
     ballOut = new IntakeBall(intake, conveyor, -1);
+    // intakeJoy = new IntakeJoy(intake, conveyor, m_operatorController);
     conveyorIn = new RunConveyor(conveyor, 1);
     conveyorOut = new RunConveyor(conveyor, -1);
     turretLeft = new RunTurretManual(turret, -1);
@@ -79,14 +91,27 @@ public class RobotContainer {
     runClimb = new RunClimb(climb, m_operatorController);
     drive = new DefaultDrive(swerve, m_driverController, 1);
     facegoal = new FaceGoal(turret);
+    turretVision = new TurretVision(turret);
 
     swerve.setDefaultCommand(drive);
     climb.setDefaultCommand(runClimb);
-    turret.setDefaultCommand(facegoal);
     swerve.resetEncoders();
+    if (autoTurret) {
+      turret.setDefaultCommand(facegoal);
+    }
+    turret.setDefaultCommand(turretVision);
+    
+    if (autoConveyor) {
+      conveyor.setDefaultCommand(autoIndex);
+    }
 
     // Configure the button bindings
     configureButtonBindings();
+
+    SmartDashboard.putBoolean("autoTurret", autoTurret);
+    SmartDashboard.putBoolean("autoIndex", autoConveyor);
+    SmartDashboard.putBoolean("Joy1", m_driverController.isConnected());
+    SmartDashboard.putBoolean("Joy2", m_operatorController.isConnected());
   }
 
   /**
@@ -104,33 +129,60 @@ public class RobotContainer {
     JoystickButton oprBump = new JoystickButton(m_operatorController, 6);
     JoystickButton oplWing = new JoystickButton(m_operatorController, 7);
     JoystickButton oprWing = new JoystickButton(m_operatorController, 8);
-    JoystickButton oplTrig = new JoystickButton(m_operatorController, 9);
-    JoystickButton oprTrig = new JoystickButton(m_operatorController, 10);
+    JoystickButton oplJoy = new JoystickButton(m_operatorController, 9);
+    JoystickButton oprJoy = new JoystickButton(m_operatorController, 10);
 
-    JoystickButton dlBump = new JoystickButton(m_driverController, 5);
-    JoystickButton drBump = new JoystickButton(m_driverController, 6);
-    JoystickButton dX = new JoystickButton(m_driverController, 3);
-    JoystickButton dA = new JoystickButton(m_driverController, 1);
-    JoystickButton dB = new JoystickButton(m_driverController, 2);
-    JoystickButton dlAnal = new JoystickButton(m_driverController, 9);
-    JoystickButton drAnal = new JoystickButton(m_driverController, 10);
+    JoystickButton dA = new JoystickButton(m_operatorController, 1);
+    JoystickButton dB = new JoystickButton(m_operatorController, 2);
+    JoystickButton dX = new JoystickButton(m_operatorController, 3);
+    JoystickButton dY = new JoystickButton(m_operatorController, 4);
+    JoystickButton dlBump = new JoystickButton(m_operatorController, 5);
+    JoystickButton drBump = new JoystickButton(m_operatorController, 6);
+    JoystickButton dlWing = new JoystickButton(m_operatorController, 7);
+    JoystickButton drWing = new JoystickButton(m_operatorController, 8);
+    JoystickButton dlJoy = new JoystickButton(m_operatorController, 9);
+    JoystickButton drJoy = new JoystickButton(m_operatorController, 10);
 
-    // opY.whileHeld(shoot);
-    opY.whileHeld(new AutoIndexBall(conveyor));
-    // opA.whenPressed(toggleHood);
-    oplTrig.whileHeld(ballOut);
-    oprTrig.whileHeld(ballIn);
-    oplBump.whileHeld(conveyorOut);
-    oprBump.whileHeld(conveyorIn);
+    // OPERATOR
+    // a, b, x, y - shooter preset
+    // right bumper - intake
+    // right trigger - shoot auto
+    // pov pad - climb stuff
+    // left joy - tick speeds
+    // right joy - climb stuff
+    // right wing - hood
+    opA.whileHeld(shootAuto);
+    opB.whileHeld(new ShootSpeed(shooter, 1500.0)); // slow shooter
+    opY.whileHeld(new ShootSpeed(shooter, 4550.0)); // fast shooter
+    opX.whileHeld(new ShootSpeed(shooter, 3000.0)); // another preset
+    SmartDashboard.putNumber("ShooterSetpoint", 
+      m_operatorController.getRawAxis(2) * 50.0 + SmartDashboard.getNumber("ShooterSetpoint", 3000.0));
+    if (Math.abs(m_operatorController.getRawAxis(3)) > 0.05) {
+      shooter.setDefaultCommand(new InstantCommand(shooter::setShooter, shooter));
+    }
+    oprWing.whileHeld(toggleHood);
+    oprBump.whileHeld(ballIn);
+    // OPERATOR:
+    // x - shoot manual, y - shoot automatic, bumpers - conveyor,
+    // triggers - intake, joystick - climb, right wing - toggle autonomous turret, b - hood toggle
+    // left wing - toggle autonomous conveyor
+    // opX.whileHeld(shoot);
+    // opY.whileHeld(shootAuto);
+    // opB.whenPressed(toggleHood);
+    // // opY.whileHeld(shoot);
+    // opY.whileHeld(new AutoIndexBall(conveyor));
+    // // opA.whenPressed(toggleHood);
+    // oplBump.whileHeld(conveyorOut);
+    // oprBump.whileHeld(conveyorIn);
 
-    dlBump.whileHeld(turretLeft);
-    drBump.whileHeld(turretRight);
+    // dlBump.whileHeld(turretLeft);
+    // drBump.whileHeld(turretRight);
 
-    dlBump.whileHeld(turretLeft);
-    drBump.whileHeld(turretRight);
+    // dlBump.whileHeld(turretLeft);
+    // drBump.whileHeld(turretRight);
 
-    ToggleHood test = new ToggleHood(shooter);
-    opA.whenPressed(test);
+    // ToggleHood test = new ToggleHood(shooter);
+    // opA.whenPressed(test);
 
     // button to dump in low goal
 

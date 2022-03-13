@@ -15,6 +15,7 @@ public class RunConveyor extends CommandBase {
     this.conveyor = conveyor;
     this.dir = dir;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(conveyor);
   }
 
   // Called when the command is initially scheduled.

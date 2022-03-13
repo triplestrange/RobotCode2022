@@ -71,11 +71,11 @@ public class Shooter extends SubsystemBase {
     m_pidController.setIZone(kIz);
     m_pidController.setFF(kFF);
     
-    setpoint = 5000.0;
+    setpoint = 3500.0;
 
     // NetworkTables
     table = NetworkTableInstance.getDefault().getTable("shooter");
-    SmartDashboard.putNumber("ShooterSetpoint", 3500.0);
+    SmartDashboard.putNumber("ShooterSetpoint", setpoint);
     kP = SmartDashboard.getNumber("ShooterP", 0.0);
     kI = SmartDashboard.getNumber("ShooterI", 0.0);
     kD = SmartDashboard.getNumber("ShooterD", 0.0);
@@ -100,7 +100,7 @@ public class Shooter extends SubsystemBase {
     // where to set the speed for shooter if change needed
     setpoint = SmartDashboard.getNumber("ShooterSetpoint", 1000.0);
     m_pidController.setReference(setpoint, ControlType.kVelocity);
-    shooter1.getEncoder().getVelocity();
+    // shooter1.getEncoder().getVelocity();
   }
 
   /**
@@ -143,6 +143,7 @@ public class Shooter extends SubsystemBase {
       val = (ty - yVals[yVals.length - 2]) / (yVals[yVals.length - 1] - yVals[yVals.length - 2]) * (speed[yVals.length - 2] - (speed[yVals.length - 1]) + speed[1]);
     }
 
+    m_pidController.setReference(val, ControlType.kVelocity);
   }
 
   

@@ -68,6 +68,12 @@ public class Conveyor extends SubsystemBase {
     motor2.set(-newSpeed);
   }
 
+  public void feedShooter(boolean atSpeed) {
+    if (atSpeed) {
+      runConveyor(speed);
+    }
+  }
+
   public void stopConveyor() {
     motor1.set(0);
     motor2.set(0);

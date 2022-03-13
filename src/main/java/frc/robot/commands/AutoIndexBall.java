@@ -6,13 +6,17 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Conveyor;
+import frc.robot.subsystems.Shooter;
 
 public class AutoIndexBall extends CommandBase {
   private Conveyor conveyor;
+  private Shooter shooter;
   /** Creates a new AutoIndexBall. */
-  public AutoIndexBall(Conveyor conveyor) {
+  public AutoIndexBall(Conveyor conveyor, Shooter shooter) {
     this.conveyor = conveyor;
+    this.shooter = shooter;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(conveyor, shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -22,6 +26,7 @@ public class AutoIndexBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    conveyor.feedShooter(shooter.atSpeed());
     conveyor.autoConveyor();
   }
 

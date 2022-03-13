@@ -10,11 +10,15 @@ import frc.robot.subsystems.Shooter;
 public class RunShooter extends CommandBase {
   private final Shooter shooter;
   private final boolean toggleHood;
+  private boolean auto;
   /** Creates a new Command. */
-  public RunShooter(Shooter shooter, boolean toggleHood) {
+  public RunShooter(Shooter shooter, boolean auto, boolean toggleHood) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.auto = auto;
     this.shooter = shooter;
     this.toggleHood = toggleHood;
+
+    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -27,7 +31,11 @@ public class RunShooter extends CommandBase {
     if (toggleHood) {
       shooter.test();
     } else {
-      shooter.setShooter();
+      if (auto) {
+        shooter.visionShoot();
+      } else {
+        shooter.setShooter();
+      }
     }
   }
 

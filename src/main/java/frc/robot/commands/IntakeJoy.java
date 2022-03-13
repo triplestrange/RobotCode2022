@@ -4,19 +4,21 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
 
-public class IntakeBall extends CommandBase {
+public class IntakeJoy extends CommandBase {
   private Intake intake;
   private Conveyor conveyor;
-  private int wheels;
-  /** Creates a new IntakeBall. */
-  public IntakeBall(Intake intake, Conveyor conveyor, int wheels) {
+  private Joystick joystick;
+  /** Creates a new IntakeJoy. */
+  public IntakeJoy(Intake intake, Conveyor conveyor, Joystick joystick) {
     this.intake = intake;
-    this.wheels = wheels;
     this.conveyor = conveyor;
+    this.joystick = joystick;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intake, conveyor);
   }
@@ -28,24 +30,27 @@ public class IntakeBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.setIntake(1);
-    if (wheels == -1) {
-      intake.wheelsOut();
-      // conveyor.runConveyor(0.5);
-      conveyor.autoConveyor();
-    } else if (wheels == 1) {
+    // left trigger
+    if (Math.abs(joystick.getRawAxis(2)) > 0.05) {
       intake.wheelsIn();
-      conveyor.runConveyor(-0.5);
+      if (SmartDashboard.getBoolean("autoIndex", false)) {
+        conveyor.autoConveyor();
+      }
+    }
+    
+    if (Math.abs(joystick.getRawAxis(3)) > 0.05) {
+      intake.wheelsOut();
+    }
+
+    // if A is pressed, extend
+    if (joystick.getRawButton(1)) {
+      intake.setIntake(1);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    intake.setIntake(0);
-    intake.stop();
-    conveyor.stopConveyor();
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

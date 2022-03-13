@@ -75,9 +75,10 @@ public class Turret extends SubsystemBase {
   }
 
   public void turretVision() {
-    double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-
-    m_turretPIDController.setReference(-tx / 20.0, ControlType.kPosition);
+    if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getBoolean(false)) {
+      double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
+      m_turretPIDController.setReference(-tx / 20.0, ControlType.kPosition);
+    }
   }
 
   public void faceGoal() {
