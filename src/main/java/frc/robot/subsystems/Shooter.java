@@ -121,14 +121,11 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  public void visionShoot() {
-    // b/t +/- 24.85, +/-20.5 deg
+  public void visionShootShort() {
     double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-    // double tyScaled = (ty / (20.5 * 2));
-    // m_pidController.setReference(tyScaled * 500 + 3500, ControlType.kVelocity);
 
-    Double yVals[] = {0.0, 0.0};
-    Double speed[] = {0.0, 0.0};
+    Double yVals[] = {-22.12,-17.12,-13.18,-11.840997, -6.470101};
+    Double speed[] = {4200.0,3900.0,3200.0,3000.0, 3000.0};
 
     double val = 0;
     for (int x = 0; x < yVals.length - 1; x++) {
@@ -142,6 +139,33 @@ public class Shooter extends SubsystemBase {
     } else if (ty > yVals[yVals.length - 1]) {
       val = (ty - yVals[yVals.length - 2]) / (yVals[yVals.length - 1] - yVals[yVals.length - 2]) * (speed[yVals.length - 2] - (speed[yVals.length - 1]) + speed[1]);
     }
+
+  }
+
+  public void visionShootLong() {
+    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+
+    Double yVals[] = {-19.01, -16.19, -10.65, -3.80};
+    Double speed[] = {4600.0, 4200.0, 3500.0, 3100.0};
+
+    double val = 0;
+    for (int x = 0; x < yVals.length - 1; x++) {
+      if (ty > yVals[x] && ty < yVals[x + 1]) {
+        val = (ty - yVals[x]) / (yVals[x + 1] - yVals[x]) * (speed[x + 1] - speed[x]) + speed[x];
+      }
+    }
+
+    if (ty < yVals[0]) {
+      val = (ty - yVals[0]) / (yVals[1] - yVals[0]) * (speed[1] - speed[0]) + speed[0];
+    } else if (ty > yVals[yVals.length - 1]) {
+      val = (ty - yVals[yVals.length - 2]) / (yVals[yVals.length - 1] - yVals[yVals.length - 2]) * (speed[yVals.length - 1] - speed[yVals.length - 2]) + speed[yVals.length - 2];
+      
+    }
+    System.out.println(val);
+
+    SmartDashboard.putNumber("vision shoot", val);
+
+    m_pidController.setReference(val, ControlType.kVelocity);
 
   }
 
@@ -164,6 +188,15 @@ public class Shooter extends SubsystemBase {
 
   public void setExtended(boolean val) {
     isExtended = val;
+  }
+
+  public void autoHood() {
+    if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getBoolean(false)
+    && NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0) < 6.0) {
+      setHood(1);
+    } else {
+      setHood(0);
+    }
   }
 
   public void initDefaultCommand() {

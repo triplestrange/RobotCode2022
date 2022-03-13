@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -27,9 +28,23 @@ public class Climber extends SubsystemBase {
 
   /** Creates a new Climber. */
   public Climber() {  
-    motor1 = new CANSparkMax(Electrical.climbL, MotorType.kBrushless);
+
     motor2 = new CANSparkMax(Electrical.climbR, MotorType.kBrushless);
+    motor1 = new CANSparkMax(Electrical.climbL, MotorType.kBrushless);
+    motor1.restoreFactoryDefaults();
+    motor2.restoreFactoryDefaults();
+    motor1.enableSoftLimit(SoftLimitDirection.kForward , false);
+    // motor1.setSoftLimit(SoftLimitDirection.kForward, );
+    motor1.enableSoftLimit(SoftLimitDirection.kReverse, false);
+    // motor1.setSoftLimit(SoftLimitDirection.kReverse, -220);
+    motor2.enableSoftLimit(SoftLimitDirection.kForward , false);
+    // motor2.setSoftLimit(SoftLimitDirection.kForward, 0);
+    motor2.enableSoftLimit(SoftLimitDirection.kReverse, false);
+    // motor2.setSoftLimit(SoftLimitDirection.kReverse, -220);
     solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 9); 
+
+    motor1.burnFlash();
+    motor2.burnFlash();
 
     encoder1 = motor1.getEncoder();
     encoder2 = motor2.getEncoder();
@@ -40,7 +55,10 @@ public class Climber extends SubsystemBase {
   }
 
   public void moveRight() {
-    motor1.set(speedR);
+    motor1.set(-speedR);
+  }
+
+  public void extend() {
   }
 
   public void moveLeft() {

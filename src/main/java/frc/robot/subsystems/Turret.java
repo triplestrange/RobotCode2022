@@ -76,8 +76,7 @@ public class Turret extends SubsystemBase {
 
   public void turretVision() {
     double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-
-    m_turretPIDController.setReference(-tx / 20.0, ControlType.kPosition);
+    m_turretPIDController.setReference(tx * 0.05, ControlType.kDutyCycle);
   }
 
   public void faceGoal() {
@@ -125,5 +124,7 @@ public class Turret extends SubsystemBase {
     setpointP = SmartDashboard.getNumber("TurretSetpointP", 0.0);
     setpointV = SmartDashboard.getNumber("TurretSetpointV", 0.0);
     SmartDashboard.putNumber("TurretPos", turretEncoder.getPosition());
+    SmartDashboard.putNumber("ty", NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0));
+    SmartDashboard.putNumber("tx", NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0));
   }
 }

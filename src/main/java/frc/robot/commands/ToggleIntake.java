@@ -4,28 +4,28 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.Turret;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Intake;
 
-public class FaceGoal extends CommandBase {
-  private Turret turret;
-  /** Creates a new FaceGoal. */
-  public FaceGoal(Turret turret) {
-    this.turret = turret;
+public class ToggleIntake extends CommandBase {
+  private Intake intake;
+  /** Creates a new ToggleIntake. */
+  public ToggleIntake(Intake intake) {
+    this.intake = intake;
+    addRequirements(intake);
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(turret);
-
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    
+    intake.toggleIntake();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // turret.faceGoal();
-    turret.turretVision();
   }
 
   // Called once the command ends or is interrupted.

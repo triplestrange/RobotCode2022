@@ -27,7 +27,8 @@ public class RunShooter extends CommandBase {
     if (toggleHood) {
       shooter.test();
     } else {
-      shooter.setShooter();
+      shooter.visionShootLong();
+      // shooter.setShooter();
     }
   }
 

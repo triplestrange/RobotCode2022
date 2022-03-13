@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.commands.AutoIndexBall;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.IntakeBall;
@@ -18,6 +21,8 @@ import frc.robot.commands.RunShooter;
 import frc.robot.commands.RunTurretManual;
 import frc.robot.commands.FaceGoal;
 import frc.robot.commands.ToggleHood;
+import frc.robot.commands.ToggleIntake;
+import frc.robot.commands.autoRoutines.Auto1;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
@@ -25,6 +30,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.Turret;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -52,18 +59,23 @@ public class RobotContainer {
   private final DefaultDrive drive;
   private final RunClimb runClimb;
   private final FaceGoal facegoal;
+  private static ProfiledPIDController theta;
 
 
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    theta = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0, 
+    AutoConstants.kThetaControllerConstraints);
+            
     intake = new Intake();
     shooter = new Shooter();
     swerve = new SwerveDrive();
     conveyor = new Conveyor();
     turret = new Turret();
     climb = new Climber();
+    
 
     m_driverController = new Joystick(0);
     m_operatorController = new Joystick(1);
@@ -82,11 +94,11 @@ public class RobotContainer {
 
     swerve.setDefaultCommand(drive);
     climb.setDefaultCommand(runClimb);
-    // turret.setDefaultCommand(facegoal);
+    turret.setDefaultCommand(facegoal);
     swerve.resetEncoders();
-
     // Configure the button bindings
-    configureButtonBindings();
+    configCommands();
+    
   }
 
   /**
@@ -95,7 +107,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {
+  private void configCommands() {
     JoystickButton opA = new JoystickButton(m_operatorController, 1);
     JoystickButton opB = new JoystickButton(m_operatorController, 2);
     JoystickButton opX = new JoystickButton(m_operatorController, 3);
@@ -104,22 +116,29 @@ public class RobotContainer {
     JoystickButton oprBump = new JoystickButton(m_operatorController, 6);
     JoystickButton oplWing = new JoystickButton(m_operatorController, 7);
     JoystickButton oprWing = new JoystickButton(m_operatorController, 8);
-    JoystickButton oplTrig = new JoystickButton(m_operatorController, 9);
-    JoystickButton oprTrig = new JoystickButton(m_operatorController, 10);
+    JoystickButton oplJoy = new JoystickButton(m_operatorController, 9);
+    JoystickButton oprJoy = new JoystickButton(m_operatorController, 10);
 
     JoystickButton dlBump = new JoystickButton(m_driverController, 5);
     JoystickButton drBump = new JoystickButton(m_driverController, 6);
     JoystickButton dX = new JoystickButton(m_driverController, 3);
     JoystickButton dA = new JoystickButton(m_driverController, 1);
     JoystickButton dB = new JoystickButton(m_driverController, 2);
-    JoystickButton dlAnal = new JoystickButton(m_driverController, 9);
-    JoystickButton drAnal = new JoystickButton(m_driverController, 10);
+    JoystickButton dlJoy = new JoystickButton(m_driverController, 9);
+    JoystickButton drJit = new JoystickButton(m_driverController, 10);
+
+    // // DRIVER
+    // shooter.setDefaultCommand(
+    //   new ConditionalCommand(onTrue, 
+    //   () -> opA.whenPressed(
+    //     () -> shooter.toggleHood()), shooter.inRange()));
 
     opY.whileHeld(shoot);
     opB.whileHeld(new AutoIndexBall(conveyor));
+    opX.whenPressed(new ToggleIntake(intake));
     // opA.whenPressed(toggleHood);
-    oplTrig.whileHeld(ballOut);
-    oprTrig.whileHeld(ballIn);
+    oplJoy.whileHeld(ballOut);
+    oprJoy.whileHeld(ballIn);
     oplBump.whileHeld(conveyorOut);
     oprBump.whileHeld(conveyorIn);
 
@@ -145,6 +164,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return shoot;
+    return new Auto1(intake, conveyor, shooter, swerve, theta);
   }
 }

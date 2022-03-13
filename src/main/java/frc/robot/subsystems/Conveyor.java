@@ -37,8 +37,8 @@ public class Conveyor extends SubsystemBase {
     motor1.setIdleMode(IdleMode.kBrake);
     motor2.setIdleMode(IdleMode.kBrake);
 
-    motor1.setSmartCurrentLimit(20);
-    motor2.setSmartCurrentLimit(20);
+    motor1.setSmartCurrentLimit(30);
+    motor2.setSmartCurrentLimit(30);
     motor1.burnFlash();
     motor2.burnFlash();
 
@@ -48,7 +48,6 @@ public class Conveyor extends SubsystemBase {
   }
 
   public void autoConveyor() {
-    System.out.println("flflflfllfllf");
     if (sensor1.get() && !sensor2.get()) {
       motor1.set(-0.75);
       motor2.set(0);
