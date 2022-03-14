@@ -28,11 +28,14 @@ public class IntakeBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.setIntake(1);
+    
     if (wheels == -1) {
+      
+      intake.setIntake(0);
       intake.wheelsOut();
       conveyor.runConveyor(0.5);
     } else if (wheels == 1) {
+      intake.setIntake(1);
       intake.wheelsIn(1);
       conveyor.autoConveyor();
     }
