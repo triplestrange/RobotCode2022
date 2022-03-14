@@ -84,6 +84,9 @@ public class Shooter extends SubsystemBase {
     shooter1.burnFlash();
 
     periodic();
+
+    // LiveWindow
+    addChild("Hood", hoodPiston);
   }
 
   /**
@@ -172,6 +175,11 @@ public class Shooter extends SubsystemBase {
   
   public void test() {
     hoodPiston.set(Value.kForward);
+  }
+
+  // to decide which hood position to use
+  public boolean inRange() {
+    return true;
   }
 
   public void toggleHood() {

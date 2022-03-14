@@ -42,6 +42,9 @@ public class Intake extends SubsystemBase {
     speedI = 0.1;
 
     periodic();
+
+    // LiveWindow
+    addChild("Solenoid", solenoid1);
   }
 
   public void setIntake(int pos) {

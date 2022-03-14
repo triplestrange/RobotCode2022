@@ -45,6 +45,10 @@ public class Conveyor extends SubsystemBase {
     table = NetworkTableInstance.getDefault().getTable("conveyor");
 
     periodic();
+
+    // LiveWindow
+    addChild("Sensor1", sensor1);
+    addChild("Sensor2", sensor2);
   }
 
   public void autoConveyor() {

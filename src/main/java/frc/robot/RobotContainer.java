@@ -12,17 +12,11 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.commands.AutoIndexBall;
 import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.IntakeBall;
 import frc.robot.commands.RunClimb;
-import frc.robot.commands.RunConveyor;
-import frc.robot.commands.RunShooter;
-import frc.robot.commands.RunTurretManual;
-import frc.robot.commands.FaceGoal;
-import frc.robot.commands.ToggleHood;
-import frc.robot.commands.ToggleIntake;
 import frc.robot.commands.autoRoutines.Auto1;
+import frc.robot.commands.autoSubsystems.LoadBall;
+import frc.robot.commands.autoSubsystems.ShootBall;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Intake;
@@ -32,12 +26,17 @@ import frc.robot.subsystems.Turret;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -51,54 +50,37 @@ public class RobotContainer {
 
   public static Joystick m_driverController;
   public static Joystick m_operatorController;
-
-  private final RunShooter shoot, toggleHood;
-  private final IntakeBall ballIn, ballOut;
-  private final RunConveyor conveyorIn, conveyorOut;
-  private final RunTurretManual turretLeft, turretRight;
-  private final DefaultDrive drive;
-  private final RunClimb runClimb;
-  private final FaceGoal facegoal;
   private static ProfiledPIDController theta;
-
 
   private NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
-    theta = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0, 
-    AutoConstants.kThetaControllerConstraints);
-            
+    theta = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0,
+        AutoConstants.kThetaControllerConstraints);
+
     intake = new Intake();
     shooter = new Shooter();
     swerve = new SwerveDrive();
     conveyor = new Conveyor();
     turret = new Turret();
     climb = new Climber();
-    
+
+    SmartDashboard.putData(intake);
+    SmartDashboard.putData(shooter);
+    SmartDashboard.putData(swerve);
+    SmartDashboard.putData(conveyor);
+    SmartDashboard.putData(turret);
+    SmartDashboard.putData(climb);
 
     m_driverController = new Joystick(0);
     m_operatorController = new Joystick(1);
 
-    shoot = new RunShooter(shooter, false);
-    toggleHood = new RunShooter(shooter, true);
-    ballIn = new IntakeBall(intake, conveyor, 1);
-    ballOut = new IntakeBall(intake, conveyor, -1);
-    conveyorIn = new RunConveyor(conveyor, 1);
-    conveyorOut = new RunConveyor(conveyor, -1);
-    turretLeft = new RunTurretManual(turret, -1);
-    turretRight = new RunTurretManual(turret, 1);
-    runClimb = new RunClimb(climb, m_operatorController);
-    drive = new DefaultDrive(swerve, m_driverController, 1);
-    facegoal = new FaceGoal(turret);
-
-    swerve.setDefaultCommand(drive);
-    climb.setDefaultCommand(runClimb);
-    turret.setDefaultCommand(facegoal);
-    swerve.resetEncoders();
     // Configure the button bindings
     configCommands();
-    
+
   }
 
   /**
@@ -119,43 +101,55 @@ public class RobotContainer {
     JoystickButton oplJoy = new JoystickButton(m_operatorController, 9);
     JoystickButton oprJoy = new JoystickButton(m_operatorController, 10);
 
-    JoystickButton dlBump = new JoystickButton(m_driverController, 5);
-    JoystickButton drBump = new JoystickButton(m_driverController, 6);
-    JoystickButton dX = new JoystickButton(m_driverController, 3);
     JoystickButton dA = new JoystickButton(m_driverController, 1);
     JoystickButton dB = new JoystickButton(m_driverController, 2);
+    JoystickButton dX = new JoystickButton(m_driverController, 3);
+    JoystickButton dY = new JoystickButton(m_driverController, 4);
+    JoystickButton dlBump = new JoystickButton(m_driverController, 5);
+    JoystickButton drBump = new JoystickButton(m_driverController, 6);
+    JoystickButton dlWing = new JoystickButton(m_driverController, 7);
+    JoystickButton drWing = new JoystickButton(m_driverController, 8);
     JoystickButton dlJoy = new JoystickButton(m_driverController, 9);
-    JoystickButton drJit = new JoystickButton(m_driverController, 10);
+    JoystickButton drJoy = new JoystickButton(m_driverController, 10);
 
-    // // DRIVER
-    // shooter.setDefaultCommand(
-    //   new ConditionalCommand(onTrue, 
-    //   () -> opA.whenPressed(
-    //     () -> shooter.toggleHood()), shooter.inRange()));
+    // DRIVER
+    // regular default driving
+    // reset gyro is left wing
+    // shooter stuff (except everything is automated)
+    drBump.whileHeld(new ShootBall(shooter, conveyor));
+    
+    // OPERATOR
+    // intaking ball
+    // climb stuff
+    opA.whenPressed(new InstantCommand(
+      () -> intake.toggleIntake(), intake));
+    oprBump.whileHeld(new LoadBall(intake, conveyor));
+    // outtake balls
+    oplBump.whileHeld(new InstantCommand(
+      () -> {
+        intake.setIntake(1);
+        intake.wheelsOut();
+        conveyor.runConveyor(-0.75);
+      }, intake, conveyor));
+    oplWing.whenPressed(new InstantCommand(climb::toggle, climb));
 
-    opY.whileHeld(shoot);
-    opB.whileHeld(new AutoIndexBall(conveyor));
-    opX.whenPressed(new ToggleIntake(intake));
-    // opA.whenPressed(toggleHood);
-    oplJoy.whileHeld(ballOut);
-    oprJoy.whileHeld(ballIn);
-    oplBump.whileHeld(conveyorOut);
-    oprBump.whileHeld(conveyorIn);
+    // couldn't get ConditionalCommand to work
+    turret.setDefaultCommand(
+      new InstantCommand(
+        () -> {
+          if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getBoolean(false)) {
+            turret.turretVision();
+          } else {
+            turret.faceGoal();
+          }
+        }
+    ));
 
-    dlBump.whileHeld(turretLeft);
-    drBump.whileHeld(turretRight);
-
-    dlBump.whileHeld(turretLeft);
-    drBump.whileHeld(turretRight);
-
-    ToggleHood test = new ToggleHood(shooter);
-    opA.whenPressed(test);
-
-    // button to dump in low goal
-
+    swerve.setDefaultCommand(new DefaultDrive(swerve, m_driverController, 1));
+    climb.setDefaultCommand(new RunClimb(climb, m_operatorController));
+    swerve.resetEncoders();
 
   }
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
