@@ -52,12 +52,15 @@ public class Conveyor extends SubsystemBase {
   }
 
   public void autoConveyor() {
+    //top is sensor 1
+    //bottom is sensor 2
+    //! means it has a value
     if (sensor1.get() && !sensor2.get()) {
-      motor1.set(-0.75);
-      motor2.set(0);
+      runConveyor(-0.75);
     }
     if (!sensor1.get() && sensor2.get()) {
-      runConveyor(-0.75);
+      motor1.set(-0.75);
+      motor2.set(0);
     }
     if (sensor1.get() && sensor2.get()) {
       runConveyor(-0.75);
@@ -99,8 +102,8 @@ public class Conveyor extends SubsystemBase {
     SmartDashboard.getNumber("ConveyorSetpoint", 0.7);
     SmartDashboard.getNumber("ConveyorSpeed", encoder1.getVelocity());
     SmartDashboard.getNumber("HopperSpeed", encoder2.getVelocity());
-    SmartDashboard.putBoolean("BallsDetectedTop", !sensor1.get());
-    SmartDashboard.putBoolean("BallsDetectedBot", !sensor2.get());
+    SmartDashboard.putBoolean("Top Sensor", sensor1.get());
+    SmartDashboard.putBoolean("Bottom Sensor", sensor2.get());
 
   }
 }

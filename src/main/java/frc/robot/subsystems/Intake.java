@@ -29,6 +29,7 @@ public class Intake extends SubsystemBase {
   public Intake() {
     super();    
     intakeMotor = new CANSparkMax(Electrical.intake, MotorType.kBrushless);
+    intakeMotor.setSmartCurrentLimit(30);
     intakeEncoder = intakeMotor.getEncoder();
     solenoid1 = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5, 10); 
 

@@ -29,7 +29,7 @@ public class ShootBall extends CommandBase {
       conveyor.runConveyor();
     }
 
-    if (shooter.inRange()) {
+    if (shooter.autoHood()) {
       shooter.visionShootShort();
     } else {
       shooter.visionShootLong();

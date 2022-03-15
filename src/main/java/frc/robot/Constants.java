@@ -131,8 +131,8 @@ public final class Constants {
 
       public static final int turret = 8;
 
-      public static final int botSensor = 0;
-      public static final int topSensor = 1;
+      public static final int botSensor = 1;
+      public static final int topSensor = 0;
 
     }
 

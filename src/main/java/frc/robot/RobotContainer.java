@@ -14,21 +14,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.RunClimb;
-import frc.robot.commands.autoRoutines.Auto1;
-import frc.robot.commands.autoSubsystems.LoadBall;
-import frc.robot.commands.autoSubsystems.ShootBall;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Conveyor;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.autoRoutines.*;
+import frc.robot.commands.autoSubsystems.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -123,30 +117,14 @@ public class RobotContainer {
     // climb stuff
     opA.whenPressed(new InstantCommand(
       () -> intake.toggleIntake(), intake));
-    oprBump.whileHeld(new LoadBall(intake, conveyor));
-    // outtake balls
-    oplBump.whileHeld(new InstantCommand(
-      () -> {
-        intake.setIntake(1);
-        intake.wheelsOut();
-        conveyor.runConveyor(-0.75);
-      }, intake, conveyor));
+    oprBump.whileHeld(new LoadBall(intake, conveyor, 1));
+    oplBump.whileHeld(new LoadBall(intake, conveyor, -1));
     oplWing.whenPressed(new InstantCommand(climb::toggle, climb));
-
-    // couldn't get ConditionalCommand to work
-    turret.setDefaultCommand(
-      new InstantCommand(
-        () -> {
-          if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getBoolean(false)) {
-            turret.turretVision();
-          } else {
-            turret.faceGoal();
-          }
-        }
-    ));
-
+    oprWing.whenPressed(new InstantCommand(turret::faceGoal, turret));
+  
     swerve.setDefaultCommand(new DefaultDrive(swerve, m_driverController, 1));
     climb.setDefaultCommand(new RunClimb(climb, m_operatorController));
+    turret.setDefaultCommand(new AimBot(turret));
     swerve.resetEncoders();
 
   }

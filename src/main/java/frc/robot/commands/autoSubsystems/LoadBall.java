@@ -12,32 +12,44 @@ import frc.robot.subsystems.Shooter;
 public class LoadBall extends CommandBase {
   private Conveyor conveyor;
   private Intake intake;
+  private double speed;
   /** Creates a new LoadBall. */
-  public LoadBall(Intake intake, Conveyor conveyor) {
+  public LoadBall(Intake intake, Conveyor conveyor, double speed) {
     addRequirements(intake, conveyor);
     this.intake = intake;
     this.conveyor = conveyor;
+    this.speed = speed;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    intake.setIntake(1);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     // intake until top sensor detects
     if (!conveyor.getTopSensor()) {
-      intake.setIntake(1);
-      intake.wheelsIn();
+      intake.wheelsIn(speed);
     }
-    conveyor.autoConveyor();
+
+    if (speed > 0) {
+      conveyor.autoConveyor();
+    } else {
+      conveyor.runConveyor(-speed);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    intake.setIntake(0);
+    intake.stop();
+    conveyor.stopConveyor();
+  }
 
   // Returns true when the command should end.
   @Override

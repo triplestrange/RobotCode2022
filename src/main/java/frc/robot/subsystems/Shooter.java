@@ -29,9 +29,12 @@ public class Shooter extends SubsystemBase {
   private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, setpoint;
   private boolean isExtended;
   private NetworkTable table;
+  private double ty;
   
   /** Creates a new Shooter. */
   public Shooter() {
+    ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+
     shooter1 = new CANSparkMax(Electrical.shooter1, MotorType.kBrushless);
     shooter2 = new CANSparkMax(Electrical.shooter2, MotorType.kBrushless);
     
@@ -125,7 +128,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void visionShootShort() {
-    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+    // double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
     Double yVals[] = {-22.12,-17.12,-13.18,-11.840997, -6.470101};
     Double speed[] = {4200.0,3900.0,3200.0,3000.0, 3000.0};
@@ -146,7 +149,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void visionShootLong() {
-    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+    // double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
     Double yVals[] = {-19.01, -16.19, -10.65, -3.80};
     Double speed[] = {4600.0, 4200.0, 3500.0, 3100.0};
@@ -177,11 +180,6 @@ public class Shooter extends SubsystemBase {
     hoodPiston.set(Value.kForward);
   }
 
-  // to decide which hood position to use
-  public boolean inRange() {
-    return true;
-  }
-
   public void toggleHood() {
     if (getExtended()) {
       setHood(0);
@@ -198,12 +196,14 @@ public class Shooter extends SubsystemBase {
     isExtended = val;
   }
 
-  public void autoHood() {
+  public boolean autoHood() {
     if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getBoolean(false)
-    && NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0) < 6.0) {
+    && NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0) < -15.0) {
       setHood(1);
+      return true;
     } else {
       setHood(0);
+      return false;
     }
   }
 

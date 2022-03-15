@@ -47,6 +47,9 @@ public class Climber extends SubsystemBase {
     solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 9); 
     extended = solenoid.get() == Value.kForward;
 
+    motor1.setSmartCurrentLimit(60);
+    motor2.setSmartCurrentLimit(60);
+
     motor1.burnFlash();
     motor2.burnFlash();
 

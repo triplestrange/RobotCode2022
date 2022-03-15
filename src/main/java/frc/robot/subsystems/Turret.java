@@ -26,11 +26,12 @@ public class Turret extends SubsystemBase {
   private double kP, kFF, kI, kD, kIz, kMaxOutput, kMinOutput, setpointP, setpointV;
   private float limitU, limitL;
   private NetworkTable table;
+  private boolean visionOn = true;
   
   /** Creates a new Turret. */
   public Turret() {
     limitU = 200;
-    limitL = -100;
+    limitL = -130;
     table = NetworkTableInstance.getDefault().getTable("turret");
     
     turretMotor = new CANSparkMax(Electrical.turret, MotorType.kBrushless);
@@ -76,7 +77,20 @@ public class Turret extends SubsystemBase {
 
   public void turretVision() {
     double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    m_turretPIDController.setReference(tx * 0.05, ControlType.kDutyCycle);
+    if (visionOn) {
+      m_turretPIDController.setReference(tx * 0.05, ControlType.kDutyCycle);
+    }
+
+    if (turretEncoder.getPosition() > 195 && tx > 0 && visionOn) {
+      m_turretPIDController.setReference(-129, ControlType.kPosition);
+      visionOn = false;
+    } 
+    if(!visionOn && turretEncoder.getPosition() < -128) {
+      visionOn = true;
+    }
+    if (turretEncoder.getPosition() < -128 && tx < 0) {
+      m_turretPIDController.setReference(213, ControlType.kPosition);
+    }
   }
 
   public void faceGoal() {

@@ -59,6 +59,6 @@ public class Auto1 extends SequentialCommandGroup {
     );
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new LoadBall(intake, conveyor), swerveControllerCommand1, new ShootBall(shooter, conveyor));
+    addCommands(new LoadBall(intake, conveyor,0.8), swerveControllerCommand1, new ShootBall(shooter, conveyor));
   }
 }
