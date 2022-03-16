@@ -29,11 +29,11 @@ public class ShootBall extends CommandBase {
       conveyor.runConveyor();
     }
 
-    if (shooter.autoHood()) {
-      shooter.visionShootShort();
-    } else {
-      shooter.visionShootLong();
-    }
+    //if (shooter.autoHood()) {
+      // shooter.visionShootShort();
+    //} else {
+     shooter.visionShootLong();
+    //}
   }
 
   // Called once the command ends or is interrupted.

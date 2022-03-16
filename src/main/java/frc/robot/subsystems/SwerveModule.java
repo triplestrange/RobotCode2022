@@ -95,8 +95,8 @@ public class SwerveModule {
     m_pidController.setFF(kFF);
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
-    m_driveMotor.setSmartCurrentLimit(50);
-    m_turningMotor.setSmartCurrentLimit(30);
+    m_driveMotor.setSmartCurrentLimit(60);
+    // m_turningMotor.setSmartCurrentLimit(30);
 
     m_driveMotor.burnFlash();
     m_turningMotor.burnFlash();

@@ -32,9 +32,9 @@ public class LoadBall extends CommandBase {
   @Override
   public void execute() {
     // intake until top sensor detects
-    if (!conveyor.getTopSensor()) {
+    //if (!conveyor.getTopSensor()) {
       intake.wheelsIn(speed);
-    }
+    //}
 
     if (speed > 0) {
       conveyor.autoConveyor();

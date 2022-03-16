@@ -77,19 +77,24 @@ public class Turret extends SubsystemBase {
 
   public void turretVision() {
     double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    if (visionOn) {
-      m_turretPIDController.setReference(tx * 0.05, ControlType.kDutyCycle);
-    }
+    // if (visionOn) {
+    //   m_turretPIDController.setReference(tx * 0.05, ControlType.kDutyCycle);
+    // }
 
-    if (turretEncoder.getPosition() > 195 && tx > 0 && visionOn) {
-      m_turretPIDController.setReference(-129, ControlType.kPosition);
-      visionOn = false;
-    } 
-    if(!visionOn && turretEncoder.getPosition() < -128) {
-      visionOn = true;
-    }
-    if (turretEncoder.getPosition() < -128 && tx < 0) {
-      m_turretPIDController.setReference(213, ControlType.kPosition);
+    // if (turretEncoder.getPosition() > 195 && tx > 0 && visionOn) {
+    //   m_turretPIDController.setReference(-129, ControlType.kPosition);
+    //   visionOn = false;
+    // } 
+    // if(!visionOn && turretEncoder.getPosition() < -128) {
+    //   visionOn = true;
+    // }
+    // if (turretEncoder.getPosition() < -128 && tx < 0) {
+    //   m_turretPIDController.setReference(213, ControlType.kPosition);
+    // }
+    if(tx!= 0) {
+      m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
+    } else {
+      m_turretPIDController.setReference(0, ControlType.kDutyCycle);
     }
   }
 

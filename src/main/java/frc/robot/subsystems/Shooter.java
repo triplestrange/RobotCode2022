@@ -99,7 +99,7 @@ public class Shooter extends SubsystemBase {
    *    whether shooter speed is at the setpoint
    */
   public boolean atSpeed() {
-    return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.07; 
+    return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.015; 
   }
 
   public void setShooter() {
@@ -126,29 +126,37 @@ public class Shooter extends SubsystemBase {
       setExtended(true);
     }
   }
-
+//0and-19back
   public void visionShootShort() {
+ 
     // double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
     Double yVals[] = {-22.12,-17.12,-13.18,-11.840997, -6.470101};
-    Double speed[] = {4200.0,3900.0,3200.0,3000.0, 3000.0};
+    Double speed[] = {4200.0,3900.0,3200.0,3000.0, 2750.0};
 
     double val = 0;
     for (int x = 0; x < yVals.length - 1; x++) {
       if (ty > yVals[x] && ty < yVals[x + 1]) {
-        val = (ty - yVals[x]) / (yVals[x + 1] - yVals[x]) * (speed[x + 1] - (speed[x]) + speed[x]);
+        val = (ty - yVals[x]) / (yVals[x + 1] - yVals[x]) * (speed[x + 1] - speed[x]) + speed[x];
       }
     }
 
     if (ty < yVals[0]) {
-      val = (ty - yVals[0]) / (yVals[1] - yVals[0]) * (speed[1] - (speed[0]) + speed[1]);
+      val = (ty - yVals[0]) / (yVals[1] - yVals[0]) * (speed[1] - speed[0]) + speed[0];
     } else if (ty > yVals[yVals.length - 1]) {
-      val = (ty - yVals[yVals.length - 2]) / (yVals[yVals.length - 1] - yVals[yVals.length - 2]) * (speed[yVals.length - 2] - (speed[yVals.length - 1]) + speed[1]);
+      val = (ty - yVals[yVals.length - 2]) / (yVals[yVals.length - 1] - yVals[yVals.length - 2]) * (speed[yVals.length - 1] - speed[yVals.length - 2]) + speed[yVals.length - 2];
+      
     }
 
+    System.out.println(val);
+
+    SmartDashboard.putNumber("ShooterSetpoint", val);
+    setpoint = val;
+    m_pidController.setReference(val, ControlType.kVelocity);
   }
 
   public void visionShootLong() {
+    
     // double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
     Double yVals[] = {-19.01, -16.19, -10.65, -3.80};
@@ -169,8 +177,8 @@ public class Shooter extends SubsystemBase {
     }
     System.out.println(val);
 
-    SmartDashboard.putNumber("vision shoot", val);
-
+    SmartDashboard.putNumber("ShooterSetpoint", val);
+    setpoint = val;
     m_pidController.setReference(val, ControlType.kVelocity);
 
   }
@@ -214,7 +222,9 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
     SmartDashboard.putBoolean("HoodExtended", getExtended());
+    SmartDashboard.putBoolean("AtSpeed?", atSpeed());
     SmartDashboard.putNumber("Output", shooter1.getAppliedOutput());
     SmartDashboard.putNumber("ShooterSpeed", m_encoder.getVelocity());
     kP = SmartDashboard.getNumber("kP", 1.0);
