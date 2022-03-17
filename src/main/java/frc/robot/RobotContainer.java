@@ -113,8 +113,8 @@ public class RobotContainer {
     // reset gyro is left wing
     // shooter stuff (except everything is automated)
     drBump.whileHeld(new ShootBall(shooter, conveyor));
-    dlWing.whileHeld(new InstantCommand(()->turret.runLeft()));
-    drWing.whileHeld(new InstantCommand(()->turret.runRight()));
+    dlWing.whileHeld(new InstantCommand(()->turret.runLeft(), turret));
+    drWing.whileHeld(new InstantCommand(()->turret.runRight(), turret));
     // OPERATOR
     // intaking ball
     // climb stuff
