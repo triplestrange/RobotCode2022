@@ -26,7 +26,8 @@ public class Turret extends SubsystemBase {
   private double kP, kFF, kI, kD, kIz, kMaxOutput, kMinOutput, setpointP, setpointV;
   private float limitU, limitL;
   private NetworkTable table;
-  private boolean visionOn = true;
+  private boolean normal = true;
+  private boolean turnaround = false;
   
   /** Creates a new Turret. */
   public Turret() {
@@ -81,10 +82,28 @@ public class Turret extends SubsystemBase {
     //   m_turretPIDController.setReference(tx * 0.05, ControlType.kDutyCycle);
     // }
 
-    // if (turretEncoder.getPosition() > 195 && tx > 0 && visionOn) {
-    //   m_turretPIDController.setReference(-129, ControlType.kPosition);
-    //   visionOn = false;
-    // } 
+    // if (turretEncoder.getPosition() > 195 && tx > 0 && normal) {
+    //   turnaround = true;
+    //   normal = false;
+    //   while (turnaround) {
+    //     m_turretPIDController.setReference(-129, ControlType.kPosition);
+    //     if (turretEncoder.getPosition() < -120) {
+    //       turnaround = false;
+    //     }
+    //   }
+    // } else if (turretEncoder.getPosition() > -120 && tx < 0 && normal) {
+    //   turnaround = true;
+    //   while (turnaround) {
+    //     m_turretPIDController.setReference(195, ControlType.kPosition);
+    //     if (turretEncoder.getPosition() > 185) {
+    //       turnaround = false;
+    //     }
+    //   }
+    // } else if (tx != 0) {
+    //   m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
+    // } else {
+    //   m_turretPIDController.setReference(0, ControlType.kDutyCycle);
+    // }
     // if(!visionOn && turretEncoder.getPosition() < -128) {
     //   visionOn = true;
     // }

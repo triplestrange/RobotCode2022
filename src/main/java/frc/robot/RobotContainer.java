@@ -106,23 +106,37 @@ public class RobotContainer {
     JoystickButton dlJoy = new JoystickButton(m_driverController, 9);
     JoystickButton drJoy = new JoystickButton(m_driverController, 10);
 
+    boolean turretAuto = true;
+
     // DRIVER
     // regular default driving
     // reset gyro is left wing
     // shooter stuff (except everything is automated)
     drBump.whileHeld(new ShootBall(shooter, conveyor));
-    dX.whileHeld(new InstantCommand(()->turret.runLeft()));
-    dB.whileHeld(new InstantCommand(()->turret.runRight()));
-    
+    dlWing.whileHeld(new InstantCommand(()->turret.runLeft()));
+    drWing.whileHeld(new InstantCommand(()->turret.runRight()));
     // OPERATOR
     // intaking ball
     // climb stuff
-    opA.whenPressed(new InstantCommand(
-      () -> intake.toggleIntake(), intake));
-    opB.whenPressed(new InstantCommand(
+    oplWing.whenPressed(new InstantCommand(
+      () -> intake.setIntake(1), intake));
+    oplWing.whenReleased(new InstantCommand(
+      () -> intake.setIntake(0), intake
+    ));
+    oprWing.whenPressed(new InstantCommand(
       () -> shooter.toggleHood()));
+    opA.whileHeld(new InstantCommand(
+      () -> shooter.setShooter(1500), shooter));
+    opA.whenReleased(new InstantCommand(shooter::stopShooter, shooter));
+    opY.whileHeld(new InstantCommand(
+      () -> shooter.setShooter(4550), shooter));
+    opY.whenReleased(new InstantCommand(shooter::stopShooter, shooter));
+    opB.whileHeld(new InstantCommand(
+      () -> shooter.setShooter(3000), shooter));
+    opB.whenReleased(new InstantCommand(shooter::stopShooter, shooter));
     oprBump.whileHeld(new LoadBall(intake, conveyor, 1));
     oplBump.whileHeld(new LoadBall(intake, conveyor, -1));
+    
     oplWing.whenPressed(new InstantCommand(climb::toggle, climb));
     oprWing.whenPressed(new InstantCommand(turret::faceGoal, turret));
   
@@ -130,6 +144,8 @@ public class RobotContainer {
     climb.setDefaultCommand(new RunClimb(climb, m_operatorController));
     turret.setDefaultCommand(new AimBot(turret));
     swerve.resetEncoders();
+    intake.setDefaultCommand(new ManualFeeder(intake, conveyor, m_operatorController));
+    // shooter.setDefaultCommand(new InstantCommand(shooter::stopShooter, shooter));
 
   }
 

@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Shooter;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 public class ShootBall extends CommandBase {
   private Shooter shooter;
   private Conveyor conveyor;
@@ -29,11 +32,20 @@ public class ShootBall extends CommandBase {
       conveyor.runConveyor();
     }
 
-    //if (shooter.autoHood()) {
-      // shooter.visionShootShort();
-    //} else {
-     shooter.visionShootLong();
-    //}
+    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+
+    if (shooter.getExtended()) {
+      if (ty > 0)
+        shooter.visionShootShort();
+      else
+        shooter.visionShootLong();
+    } else {
+      if (ty < -19) {
+        shooter.visionShootLong();
+      } else {
+        shooter.visionShootShort();
+      }
+    }
   }
 
   // Called once the command ends or is interrupted.
