@@ -41,6 +41,7 @@ public class RobotContainer {
   private final Turret turret;
   private final Conveyor conveyor;
   private final Climber climb;
+  private final Hood hood;
 
   public static Joystick m_driverController;
   public static Joystick m_operatorController;
@@ -55,12 +56,17 @@ public class RobotContainer {
     theta = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0,
         AutoConstants.kThetaControllerConstraints);
 
+        
+    m_driverController = new Joystick(0);
+    m_operatorController = new Joystick(1);
+
     intake = new Intake();
     shooter = new Shooter();
     swerve = new SwerveDrive();
     conveyor = new Conveyor();
     turret = new Turret();
     climb = new Climber();
+    hood = new Hood();
 
     SmartDashboard.putData(intake);
     SmartDashboard.putData(shooter);
@@ -68,9 +74,6 @@ public class RobotContainer {
     SmartDashboard.putData(conveyor);
     SmartDashboard.putData(turret);
     SmartDashboard.putData(climb);
-
-    m_driverController = new Joystick(0);
-    m_operatorController = new Joystick(1);
 
     // Configure the button bindings
     configCommands();
@@ -113,8 +116,8 @@ public class RobotContainer {
     // reset gyro is left wing
     // shooter stuff (except everything is automated)
     drBump.whileHeld(new ShootBall(shooter, conveyor));
-    dlWing.whileHeld(new InstantCommand(()->turret.runLeft(), turret));
-    drWing.whileHeld(new InstantCommand(()->turret.runRight(), turret));
+    // dlWing.whileHeld(new InstantCommand(()->turret.runLeft(), turret));
+    // drWing.whileHeld(new InstantCommand(()->turret.runRight(), turret));
     // OPERATOR
     // intaking ball
     // climb stuff
@@ -124,7 +127,7 @@ public class RobotContainer {
       () -> intake.setIntake(0), intake
     ));
     oprWing.whenPressed(new InstantCommand(
-      () -> shooter.toggleHood()));
+      () -> hood.toggleHood()));
     opA.whileHeld(new InstantCommand(
       () -> shooter.setShooter(1500), shooter));
     opA.whenReleased(new InstantCommand(shooter::stopShooter, shooter));
@@ -142,10 +145,9 @@ public class RobotContainer {
   
     swerve.setDefaultCommand(new DefaultDrive(swerve, m_driverController, 1));
     climb.setDefaultCommand(new RunClimb(climb, m_operatorController));
-    turret.setDefaultCommand(new AimBot(turret));
+    turret.setDefaultCommand(new AimBot(turret, hood));
     swerve.resetEncoders();
-    intake.setDefaultCommand(new ManualFeeder(intake, conveyor, m_operatorController));
-    // shooter.setDefaultCommand(new InstantCommand(shooter::stopShooter, shooter));
+    // intake.setDefaultCommand(new ManualFeeder(intake, conveyor, m_operatorController));
 
   }
 

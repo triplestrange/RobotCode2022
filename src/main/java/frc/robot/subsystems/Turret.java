@@ -27,7 +27,7 @@ public class Turret extends SubsystemBase {
   private float limitU, limitL;
   private NetworkTable table;
   private boolean normal = true;
-  private boolean turnaround = false;
+  private boolean turnaround1 = false, turnaround2 = false;
   
   /** Creates a new Turret. */
   public Turret() {
@@ -58,8 +58,8 @@ public class Turret extends SubsystemBase {
     kI = 0;
     kD = 0; 
     kIz = 0; 
-    kMaxOutput = 0.075;
-    kMinOutput = -0.075;
+    kMaxOutput = 0.15;
+    kMinOutput = -0.15;
 
     // // set PID coefficients
     m_turretPIDController.setP(kP);
@@ -78,43 +78,38 @@ public class Turret extends SubsystemBase {
 
   public void turretVision() {
     double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    // if (visionOn) {
-    //   m_turretPIDController.setReference(tx * 0.05, ControlType.kDutyCycle);
+    // if (!turnaround1 && !turnaround2 && tx != 0) {
+    //   m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
+      
+    //   System.out.println("vision time");
     // }
 
-    // if (turretEncoder.getPosition() > 195 && tx > 0 && normal) {
-    //   turnaround = true;
-    //   normal = false;
-    //   while (turnaround) {
-    //     m_turretPIDController.setReference(-129, ControlType.kPosition);
-    //     if (turretEncoder.getPosition() < -120) {
-    //       turnaround = false;
-    //     }
-    //   }
-    // } else if (turretEncoder.getPosition() > -120 && tx < 0 && normal) {
-    //   turnaround = true;
-    //   while (turnaround) {
-    //     m_turretPIDController.setReference(195, ControlType.kPosition);
-    //     if (turretEncoder.getPosition() > 185) {
-    //       turnaround = false;
-    //     }
-    //   }
-    // } else if (tx != 0) {
-    //   m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
-    // } else {
-    //   m_turretPIDController.setReference(0, ControlType.kDutyCycle);
+    // if (turretEncoder.getPosition() > 198 && tx > 0) {
+    //   turnaround1 = true;
+    //   m_turretPIDController.setReference(-115, ControlType.kPosition);
+    //   System.out.println("turnaround1 true");
+
+    // } else if (turretEncoder.getPosition() < -128 && tx < 0) {
+    //   turnaround2 = true;
+    //   m_turretPIDController.setReference(185, ControlType.kPosition);
+    //   System.out.println("turnaround2 true");
     // }
-    // if(!visionOn && turretEncoder.getPosition() < -128) {
-    //   visionOn = true;
+
+    // if(turnaround1 && turretEncoder.getPosition() < -100) {
+    //   turnaround1 = false;
+    //   System.out.println("turnaround1 false");
     // }
-    // if (turretEncoder.getPosition() < -128 && tx < 0) {
-    //   m_turretPIDController.setReference(213, ControlType.kPosition);
+    // if(turnaround2 && turretEncoder.getPosition() > 170) {
+    //   turnaround2 = false;
+    //   System.out.println("turnaround2 false");
     // }
-    if(tx!= 0) {
-      m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
-    } else {
-      m_turretPIDController.setReference(0, ControlType.kDutyCycle);
-    }
+
+    //Failsafe no wrap around code
+          if(tx!= 0) {
+            m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
+          } else {
+            m_turretPIDController.setReference(0, ControlType.kDutyCycle);
+          }
   }
 
   public void faceGoal() {

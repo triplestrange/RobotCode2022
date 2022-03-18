@@ -25,9 +25,9 @@ public class Shooter extends SubsystemBase {
   private final CANSparkMax shooter1, shooter2;
   private SparkMaxPIDController m_pidController;
   private RelativeEncoder m_encoder;
-  private final DoubleSolenoid hoodPiston;
+  //private final DoubleSolenoid hoodPiston;
+  //private boolean isExtended;
   private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, setpoint;
-  private boolean isExtended;
   private NetworkTable table;
   private double ty;
   
@@ -52,8 +52,7 @@ public class Shooter extends SubsystemBase {
 
 
 
-    hoodPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, 7, 8);
-    hoodPiston.set(Value.kReverse);
+    
 
     m_encoder = shooter1.getEncoder();
 
@@ -89,7 +88,7 @@ public class Shooter extends SubsystemBase {
     periodic();
 
     // LiveWindow
-    addChild("Hood", hoodPiston);
+    //addChild("Hood", hoodPiston);
   }
 
   /**
@@ -117,18 +116,17 @@ public class Shooter extends SubsystemBase {
   }
 
 
-  public void setHood(int pos) {
-    if (pos == 0) {
-      hoodPiston.set(Value.kReverse);
-      setExtended(false);
-    } else {
-      hoodPiston.set(Value.kForward);
-      setExtended(true);
-    }
-  }
+  // public void setHood(int pos) {
+  //   if (pos == 0) {
+  //     hoodPiston.set(Value.kReverse);
+  //     setExtended(false);
+  //   } else {
+  //     hoodPiston.set(Value.kForward);
+  //     setExtended(true);
+  //   }
+  // }
 //0and-19back
   public void visionShootShort() {
-    setHood(0);
 
     Double yVals[] = {-22.12,-17.12,-13.18,-11.840997, -6.470101};
     Double speed[] = {4200.0,3900.0,3200.0, 3000.0, 3000.0}; // 2750 for last one
@@ -155,7 +153,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public void visionShootLong() {
-    setHood(1);
 
     Double yVals[] = {-19.01, -16.19, -10.65, -3.80};
     Double speed[] = {4600.0, 4200.0, 3500.0, 3100.0};
@@ -181,37 +178,32 @@ public class Shooter extends SubsystemBase {
 
   }
 
-  
-  public void test() {
-    hoodPiston.set(Value.kForward);
-  }
+  // public void toggleHood() {
+  //   if (getExtended()) {
+  //     setHood(0);
+  //   } else {
+  //     setHood(1);
+  //   }
+  // }
 
-  public void toggleHood() {
-    if (getExtended()) {
-      setHood(0);
-    } else {
-      setHood(1);
-    }
-  }
+  // public boolean getExtended() {
+  //   return isExtended;
+  // }
 
-  public boolean getExtended() {
-    return isExtended;
-  }
+  // public void setExtended(boolean val) {
+  //   isExtended = val;
+  // }
 
-  public void setExtended(boolean val) {
-    isExtended = val;
-  }
-
-  public boolean autoHood() {
-    if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getBoolean(false)
-    && NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0) < -15.0) {
-      setHood(1);
-      return true;
-    } else {
-      setHood(0);
-      return false;
-    }
-  }
+  // public boolean autoHood() {
+  //   if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getBoolean(false)
+  //   && NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0) < -15.0) {
+  //     setHood(1);
+  //     return true;
+  //   } else {
+  //     setHood(0);
+  //     return false;
+  //   }
+  // }
 
   public void initDefaultCommand() {
     
@@ -221,7 +213,7 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-    SmartDashboard.putBoolean("HoodExtended", getExtended());
+    //SmartDashboard.putBoolean("HoodExtended", getExtended());
     SmartDashboard.putBoolean("AtSpeed?", atSpeed());
     SmartDashboard.putNumber("Output", shooter1.getAppliedOutput());
     SmartDashboard.putNumber("ShooterSpeed", m_encoder.getVelocity());

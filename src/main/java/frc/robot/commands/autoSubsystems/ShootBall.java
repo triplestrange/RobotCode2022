@@ -10,6 +10,7 @@ import frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShootBall extends CommandBase {
   private Shooter shooter;
@@ -28,23 +29,15 @@ public class ShootBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    boolean extended = SmartDashboard.getBoolean("HoodExtended", false);
     if (shooter.atSpeed()) {
       conveyor.runConveyor();
     }
 
-    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-
-    if (shooter.getExtended()) {
-      if (ty > 0)
+    if (extended) {
         shooter.visionShootShort();
-      else
-        shooter.visionShootLong();
     } else {
-      if (ty < -19) {
         shooter.visionShootLong();
-      } else {
-        shooter.visionShootShort();
-      }
     }
   }
 
