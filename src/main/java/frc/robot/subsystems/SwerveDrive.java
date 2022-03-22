@@ -109,6 +109,10 @@ public class SwerveDrive extends SubsystemBase {
         SmartDashboard.putNumber("FRSteering", m_frontRight.m_absoluteEncoder.getAngle());
         SmartDashboard.putNumber("BLSteering", m_rearLeft.m_absoluteEncoder.getAngle());
         SmartDashboard.putNumber("BRSteering", m_rearRight.m_absoluteEncoder.getAngle());
+        SmartDashboard.putNumber("FLSteeringDeg", m_frontLeft.m_absoluteEncoder.getAngle() * 180.0 / Math.PI);
+        SmartDashboard.putNumber("FRSteeringDeg", m_frontRight.m_absoluteEncoder.getAngle() * 180.0 / Math.PI);
+        SmartDashboard.putNumber("BLSteeringDeg", m_rearLeft.m_absoluteEncoder.getAngle() * 180.0 / Math.PI);
+        SmartDashboard.putNumber("BRSteeringDeg", m_rearRight.m_absoluteEncoder.getAngle() * 180.0 / Math.PI);
         SmartDashboard.putNumber("FLSteerNEO", m_frontLeft.m_turningEncoder.getPosition());
         SmartDashboard.putNumber("FRSteerNEO", m_frontRight.m_turningEncoder.getPosition());
         SmartDashboard.putNumber("BLSteerNEO", m_rearLeft.m_turningEncoder.getPosition());

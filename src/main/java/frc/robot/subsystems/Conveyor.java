@@ -37,21 +37,33 @@ public class Conveyor extends SubsystemBase {
     motor1.setIdleMode(IdleMode.kBrake);
     motor2.setIdleMode(IdleMode.kBrake);
 
+    motor1.setSmartCurrentLimit(30);
+    motor2.setSmartCurrentLimit(30);
+    motor1.burnFlash();
+    motor2.burnFlash();
+
     table = NetworkTableInstance.getDefault().getTable("conveyor");
 
     periodic();
+
+    // LiveWindow
+    addChild("Sensor1", sensor1);
+    addChild("Sensor2", sensor2);
   }
 
   public void autoConveyor() {
+    //top is sensor 1
+    //bottom is sensor 2
+    //! means it has a value
     if (sensor1.get() && !sensor2.get()) {
-      motor1.set(-0.75);
-      motor2.set(0);
+      runConveyor(-1);
     }
     if (!sensor1.get() && sensor2.get()) {
-      runConveyor(-0.75);
+      motor1.set(-1);
+      motor2.set(0);
     }
     if (sensor1.get() && sensor2.get()) {
-      runConveyor(-0.75);
+      runConveyor(-1);
     }
     if (!sensor1.get() && !sensor2.get()) {
       stopConveyor();
@@ -59,8 +71,8 @@ public class Conveyor extends SubsystemBase {
   }
 
   public void runConveyor() {
-    motor1.set(speed);
-    motor2.set(-speed);
+    motor1.set(-0.65);
+    motor2.set(1);
   }
 
   public void runConveyor(double newSpeed) {
@@ -81,6 +93,10 @@ public class Conveyor extends SubsystemBase {
     return !sensor2.get();
   }
 
+  public boolean empty() {
+    return !sensor1.get() == false && !sensor2.get() == false;
+  }
+
   public void initDefaultCommand() {
     
   }
@@ -90,8 +106,8 @@ public class Conveyor extends SubsystemBase {
     SmartDashboard.getNumber("ConveyorSetpoint", 0.7);
     SmartDashboard.getNumber("ConveyorSpeed", encoder1.getVelocity());
     SmartDashboard.getNumber("HopperSpeed", encoder2.getVelocity());
-    SmartDashboard.putBoolean("BallsDetectedTop", !sensor1.get());
-    SmartDashboard.putBoolean("BallsDetectedBot", !sensor2.get());
+    SmartDashboard.putBoolean("Top Sensor", !sensor1.get());
+    SmartDashboard.putBoolean("Bottom Sensor", !sensor2.get());
 
   }
 }

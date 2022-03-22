@@ -13,6 +13,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -95,6 +96,11 @@ public class SwerveModule {
     m_pidController.setFF(kFF);
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
+    m_driveMotor.setSmartCurrentLimit(40);
+    m_turningMotor.setSmartCurrentLimit(30);
+    m_driveMotor.setIdleMode(IdleMode.kBrake);
+    m_turningMotor.setIdleMode(IdleMode.kBrake);
+
     m_driveMotor.burnFlash();
     m_turningMotor.burnFlash();
   }
@@ -105,7 +111,7 @@ public class SwerveModule {
    * @return The current state of the module.
    */
   public SwerveModuleState getState() {
-    return new SwerveModuleState(m_driveEncoder.getVelocity() + m_turningEncoder.getVelocity()*ModuleConstants.kWheelDiameterMeters/4, new Rotation2d(m_turningEncoder.getPosition()));
+    return new SwerveModuleState(m_driveEncoder.getVelocity() + m_turningEncoder.getVelocity()*ModuleConstants.kWheelDiameterMeters/2, new Rotation2d(m_turningEncoder.getPosition()));
   }
 
   /**
@@ -116,6 +122,11 @@ public class SwerveModule {
   public void setDesiredState(SwerveModuleState state) {
 
     double desiredDrive = state.speedMetersPerSecond/Constants.SwerveConstants.kMaxSpeedMetersPerSecond;
+
+    if (Math.abs(desiredDrive) < 0.05) {
+      m_driveMotor.set(0);
+      return;
+    }
     double desiredSteering = state.angle.getRadians();
     double currentSteering = m_turningEncoder.getPosition();
 

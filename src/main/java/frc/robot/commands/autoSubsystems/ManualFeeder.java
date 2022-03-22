@@ -2,42 +2,47 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.autoSubsystems;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Conveyor;
+import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.subsystems.Intake;
-import frc.robot.Constants;
 
-public class IntakeBall extends CommandBase {
-  private Intake intake;
+public class ManualFeeder extends CommandBase {
   private Conveyor conveyor;
-  private int wheels;
-  /** Creates a new IntakeBall. */
-  public IntakeBall(Intake intake, Conveyor conveyor, int wheels) {
-    this.intake = intake;
-    this.wheels = wheels;
-    this.conveyor = conveyor;
-    // Use addRequirements() here to declare subsystem dependencies.
+  private Intake intake;
+  private Joystick joystick;
+  /** Creates a new LoadBall. */
+  public ManualFeeder(Intake intake, Conveyor conveyor, Joystick joystick) {
     addRequirements(intake, conveyor);
+    this.intake = intake;
+    this.conveyor = conveyor;
+    this.joystick = joystick;
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.setIntake(1);
-    if (wheels == -1) {
-      intake.wheelsOut();
-      conveyor.runConveyor(-0.5);
-    } else if (wheels == 1) {
-      intake.wheelsIn();
-      if (Constants.AutoConstants.autonomousIntake) {
-        conveyor.autoConveyor();
-      }
+    double speed = 0;
+    if (joystick.getRawAxis(2) > 0.1) {
+      speed = joystick.getRawAxis(2);
+    } else if (joystick.getRawAxis(3) > 0.1) {
+      speed = -joystick.getRawAxis(3);
+    }
+
+    intake.wheelsIn(-speed);
+
+    if (speed < 0) {
+      conveyor.autoConveyor();
+    } else {
+      conveyor.runConveyor(-speed);
     }
   }
 

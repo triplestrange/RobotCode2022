@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Intake extends SubsystemBase {
   private final CANSparkMax intakeMotor;
   private final RelativeEncoder intakeEncoder;
-  private final DoubleSolenoid intakeSolenoid;
+  private final DoubleSolenoid solenoid1;
   private boolean extended = false;
   private NetworkTable table;
   private double speedI;
@@ -29,34 +29,52 @@ public class Intake extends SubsystemBase {
   public Intake() {
     super();    
     intakeMotor = new CANSparkMax(Electrical.intake, MotorType.kBrushless);
+    intakeMotor.setSmartCurrentLimit(30);
     intakeEncoder = intakeMotor.getEncoder();
-    intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0,1); 
+    solenoid1 = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5, 10); 
 
-    intakeMotor.restoreFactoryDefaults();
+    // intakeMotor.restoreFactoryDefaults();
     intakeMotor.setIdleMode(IdleMode.kBrake);
-    intakeMotor.enableVoltageCompensation(11);
-    intakeMotor.setSmartCurrentLimit(20);
+    // intakeMotor.enableVoltageCompensation(11);
+    // intakeMotor.setSmartCurrentLimit(80);
     intakeMotor.burnFlash();
 
     table = NetworkTableInstance.getDefault().getTable("intake");
-    speedI = 0.5;
+    speedI = 0.1;
 
     periodic();
+
+    // LiveWindow
+    addChild("Solenoid", solenoid1);
   }
 
   public void setIntake(int pos) {
       if(pos==0){ //retract
-        intakeSolenoid.set(Value.kReverse);
+        solenoid1.set(Value.kReverse);
         setExtended(false);
       }
       else { //extend
-        intakeSolenoid.set(Value.kForward);
+        solenoid1.set(Value.kForward);
         setExtended(true);
       }
   }
 
+  public void toggleIntake() {
+    if (getExtended()) {
+      solenoid1.set(Value.kReverse);
+      setExtended(false);
+    } else {
+      solenoid1.set(Value.kForward);
+      setExtended(true);
+    }
+  }
+
   public void wheelsIn() {
     intakeMotor.set(speedI);
+  }
+
+  public void wheelsIn(double speed) {
+    intakeMotor.set(speed);
   }
 
   public void wheelsOut() {

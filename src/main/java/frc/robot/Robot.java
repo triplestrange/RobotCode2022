@@ -9,6 +9,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Pose2d;
+// import edu.wpi.first.wpiutil.net.*;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  private Field2d m_field;
 
   private RobotContainer m_robotContainer;
   
@@ -33,8 +36,12 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-    m_field = new Field2d();
-    SmartDashboard.putData(m_field);
+    // PortForwarder.add(5800, "limelight.local", 5800);
+    // PortForwarder.add(5801, "limelight.local", 5801);
+    // PortForwarder.add(5802, "limelight.local", 5802);
+    // PortForwarder.add(5803, "limelight.local", 5803);
+    // PortForwarder.add(5804, "limelight.local", 5804);
+    // PortForwarder.add(5805, "limelight.local", 5805);
 
   }
 
@@ -52,11 +59,13 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    SmartDashboard.putData(CommandScheduler.getInstance());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -65,6 +74,9 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    m_robotContainer.swerve.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)));
+    // m_robotContainer.climb.extend();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -78,6 +90,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_robotContainer.climb.extend();
+
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

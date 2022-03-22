@@ -43,7 +43,7 @@ public final class Constants {
       public static final boolean backRightSteerEncoderReversed = false;
 
       // Distance between centers of right and left wheels on robot in meters
-    public static final double kTrackWidth = 0.46355;
+    public static final double kTrackWidth = 0.59055;
     //Distance between centers of right and left wheels on robot
     public static final double kWheelBase = 0.59055;
     //Distance between front and back wheels on robot
@@ -58,12 +58,12 @@ public final class Constants {
       public static final double kMaxModuleAngularSpeedRadiansPerSecond = 10 * Math.PI;
       public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 10 * Math.PI;
   
-      public static final double kDriveEncoderCPR = (8);
+      public static final double kDriveEncoderCPR = (6);
       public static final double kSteerEncoderCPR = ((100d/30)*9);
   
       // adjust for calibration
       // 2/25/21 - 0.12584
-      public static final double kWheelDiameterMeters = .12935;
+      public static final double kWheelDiameterMeters = .1016;
       public static final double kDriveEncoderDistancePerPulse =
           // Assumes the encoders are directly mounted on the wheel shafts
           (kWheelDiameterMeters * Math.PI) / (double) kDriveEncoderCPR;
@@ -99,14 +99,12 @@ public final class Constants {
       public static final double kPYController = 2.8;
       public static final double kDXController = 0;
       public static final double kDYController = 0;
-      public static final double kPThetaController = 2;
+      public static final double kPThetaController = 3;
   
       // Constraint for the motion profilied robot angle controller
       public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
           kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   
-
-      public static boolean autonomousIntake = false;
     }
 
     public static final class Electrical {
@@ -129,12 +127,13 @@ public final class Constants {
       public static final int intake = 9;
 
       public static final int conveyor1 = 10;
+      
       public static final int conveyor2 = 11;
 
       public static final int turret = 8;
 
-      public static final int botSensor = 0;
-      public static final int topSensor = 1;
+      public static final int botSensor = 1;
+      public static final int topSensor = 0;
 
     }
 
