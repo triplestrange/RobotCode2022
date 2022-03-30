@@ -28,15 +28,15 @@ public class RunClimb extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Math.abs(joystick.getRawAxis(1)) > 0.3) {
-      SmartDashboard.putNumber("ClimberSpeedL", joystick.getRawAxis(1));
+    if (Math.abs(joystick.getRawAxis(5)) > 0.3) {
+      SmartDashboard.putNumber("ClimberSpeedL", joystick.getRawAxis(5));
       climb.moveLeft();
     } else {
       climb.stopLeft();
     }
 
-    if (Math.abs(joystick.getRawAxis(5)) > 0.3) {
-      SmartDashboard.putNumber("ClimberSpeedR", joystick.getRawAxis(5));
+    if (Math.abs(joystick.getRawAxis(1)) > 0.3) {
+      SmartDashboard.putNumber("ClimberSpeedR", joystick.getRawAxis(1));
       climb.moveRight();
      } else {
        climb.stopRight();

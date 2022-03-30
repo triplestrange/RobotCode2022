@@ -32,7 +32,7 @@ public class Turret extends SubsystemBase {
   /** Creates a new Turret. */
   public Turret() {
     limitU = 200;
-    limitL = -130;
+    limitL = -100;
     table = NetworkTableInstance.getDefault().getTable("turret");
     
     turretMotor = new CANSparkMax(Electrical.turret, MotorType.kBrushless);
@@ -58,8 +58,8 @@ public class Turret extends SubsystemBase {
     kI = 0;
     kD = 0; 
     kIz = 0; 
-    kMaxOutput = 0.15;
-    kMinOutput = -0.15;
+    kMaxOutput = 0.85;
+    kMinOutput = -0.85;
 
     // // set PID coefficients
     m_turretPIDController.setP(kP);
@@ -78,38 +78,56 @@ public class Turret extends SubsystemBase {
 
   public void turretVision() {
     double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    // if (!turnaround1 && !turnaround2 && tx != 0) {
-    //   m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
-      
-    //   System.out.println("vision time");
-    // }
+    if (!turnaround1 && !turnaround2 ) {
+      if (tx != 0) {
+        m_turretPIDController.setReference(tx * 0.02, ControlType.kDutyCycle);
+        System.out.println("vision time");
+      } else {
+        // faceGoal();
+        // make it always face the goal
+      }
+    }
 
-    // if (turretEncoder.getPosition() > 198 && tx > 0) {
-    //   turnaround1 = true;
-    //   m_turretPIDController.setReference(-115, ControlType.kPosition);
-    //   System.out.println("turnaround1 true");
+    if (turretEncoder.getPosition() > 198 && tx > 20.0) {
+      turnaround1 = true;
+      m_turretPIDController.setReference(-115, ControlType.kPosition);
+      System.out.println("turnaround1 true");
 
-    // } else if (turretEncoder.getPosition() < -128 && tx < 0) {
-    //   turnaround2 = true;
-    //   m_turretPIDController.setReference(185, ControlType.kPosition);
-    //   System.out.println("turnaround2 true");
-    // }
+    } else if (turretEncoder.getPosition() < -98 && tx < -20.0) {
+      turnaround2 = true;
+      m_turretPIDController.setReference(185, ControlType.kPosition);
+      System.out.println("turnaround2 true");
+    }
 
-    // if(turnaround1 && turretEncoder.getPosition() < -100) {
-    //   turnaround1 = false;
-    //   System.out.println("turnaround1 false");
-    // }
-    // if(turnaround2 && turretEncoder.getPosition() > 170) {
-    //   turnaround2 = false;
-    //   System.out.println("turnaround2 false");
-    // }
+    if (turnaround1 && turretEncoder.getPosition() < -100) {
+      turnaround1 = false;
+      System.out.println("turnaround1 false");
+    }
+    if (turnaround2 && turretEncoder.getPosition() > 170) {
+      turnaround2 = false;
+      System.out.println("turnaround2 false");
+    }
+
+    if (isStuck()) {
+      turnaround1 = false;
+      turnaround2 = false;
+      // m_turretPIDController.setReference(0, ControlType.kDutyCycle);
+    }
 
     //Failsafe no wrap around code
-          if(tx!= 0) {
-            m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
-          } else {
-            m_turretPIDController.setReference(0, ControlType.kDutyCycle);
-          }
+          // if(tx!= 0) {
+          //   m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
+          // } else {
+          //   m_turretPIDController.setReference(0, ControlType.kDutyCycle);
+          // }
+  }
+
+  public boolean isStuck() {
+    if (Math.abs(turretMotor.getAppliedOutput()) > 0.045 && turretEncoder.getVelocity() < 0.025) {
+      System.out.println("STUCK");
+      return true;
+    }
+    return false;
   }
 
   public void faceGoal() {
@@ -132,15 +150,21 @@ public class Turret extends SubsystemBase {
   }
   
   public void runRight() {
-    turretMotor.set(0.1);
+    turretMotor.set(0.25);
+    turnaround1 = false;
+    turnaround2 = false;
   }
 
   public void runLeft() {
-    turretMotor.set(-0.1);
+    turretMotor.set(-0.25);
+    turnaround1 = false;
+    turnaround2 = false;
   }
 
   public void stop() {
     turretMotor.set(0);
+    turnaround1 = false;
+    turnaround2 = false;
   }
 
   public void zeroTurret() {
@@ -159,5 +183,6 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putNumber("TurretPos", turretEncoder.getPosition());
     SmartDashboard.putNumber("ty", NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0));
     SmartDashboard.putNumber("tx", NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0));
+    SmartDashboard.putBoolean("Rumble", isStuck());
   }
 }

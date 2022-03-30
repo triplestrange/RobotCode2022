@@ -124,7 +124,6 @@ public class SwerveDrive extends SubsystemBase {
         SmartDashboard.putNumber("x", getPose().getTranslation().getX());
         SmartDashboard.putNumber("y", getPose().getTranslation().getY());
         SmartDashboard.putNumber("r", getPose().getRotation().getDegrees());
-        SmartDashboard.putNumber("FLdriveEncoder", m_frontLeft.m_driveEncoder.getVelocity());
         SmartDashboard.putNumber("GYRO ANGLE", navX.getAngle());
   }
 

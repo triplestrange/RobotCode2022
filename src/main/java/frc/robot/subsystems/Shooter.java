@@ -131,7 +131,7 @@ public class Shooter extends SubsystemBase {
   public void visionShootShort() {
     double offset = SmartDashboard.getNumber("ChangeShortShoot", 0);
     Double yVals[] = {-22.12, -17.12, -13.18,-11.840997, -6.470101, 0.8};
-    Double speed[] = {4000.0, 3600.0, 3150.0, 3000.0, 3000.0, 2750.0}; // 2750 for last one
+    Double speed[] = {3800.0, 3550.0, 3150.0, 3000.0, 3000.0, 2750.0}; // 2750 for last one
 
     double val = 0;
     for (int x = 0; x < yVals.length - 1; x++) {
@@ -161,7 +161,7 @@ public class Shooter extends SubsystemBase {
     Double yVals[] = {-19.01, -16.19, -10.65, -3.80};
 
     //initial
-    Double speed[] = {4600.0, 4200.0, 3500.0, 3100.0};
+    Double speed[] = {3950.0, 3600.0, 3300.0, 3000.0};
 
     //not enough
     //Double speed[] = {4700.0, 4300.0, 3600.0, 3300.0};
@@ -188,6 +188,12 @@ public class Shooter extends SubsystemBase {
     setpoint = val;
     m_pidController.setReference(val, ControlType.kVelocity);
 
+  }
+
+  public void shootMoving() {
+    // shooter rpm - ball vertical speed
+    // double vy = m_encoder.getVelocity();
+    // double vx = 
   }
 
   // public void toggleHood() {

@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
@@ -67,7 +68,6 @@ public class DefaultDrive extends CommandBase {
     if (Math.abs(m_joystick.getRawAxis(4)) > 0.2) {
       m_rot = -m_joystick.getRawAxis(4) * 2 * Math.PI;
     }
-
 
     double curHead = m_drive.getAngle().getDegrees();
 

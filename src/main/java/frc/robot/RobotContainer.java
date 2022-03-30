@@ -10,7 +10,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.commands.DefaultDrive;
@@ -23,10 +25,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.autoRoutines.*;
 import frc.robot.commands.autoSubsystems.*;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
+import java.time.Instant;
 import java.util.List;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -138,9 +140,13 @@ public class RobotContainer {
 
     //manual turret
     dlWing.whileHeld(new InstantCommand(()->turret.runLeft(), turret));
+    dlWing.whenReleased(new InstantCommand(()->turret.stop(), turret));
     drWing.whileHeld(new InstantCommand(()->turret.runRight(), turret));
+    drWing.whileHeld(new InstantCommand(()->turret.stop(), turret));
 
-
+    if (SmartDashboard.getBoolean("Rumble", false)) {
+      m_driverController.setRumble(RumbleType.kLeftRumble, 0.1);
+    }
 
     // OPERATOR
     // toggle intake
@@ -205,18 +211,18 @@ public class RobotContainer {
             new Pose2d(1, 0, new Rotation2d(0)), config);
 
     Trajectory ball1ToBall2 = TrajectoryGenerator
-            .generateTrajectory(new Pose2d(1, 0, new Rotation2d(-Math.PI / 2)), List.of(
+            .generateTrajectory(new Pose2d(0.75, 0, new Rotation2d(-Math.PI / 2)), List.of(
     
             ),
                 // direction robot moves
-                new Pose2d(1 - 1.19, -2.72, new Rotation2d(-Math.PI / 2)), config);
+                new Pose2d(0.75 - 1.19, -2.72, new Rotation2d(-Math.PI / 2)), config);
 
     Trajectory ball2ToHumanPlayer = TrajectoryGenerator
-                .generateTrajectory(new Pose2d(1 - 1.19, -2.72, new Rotation2d(-Math.PI / 2)), List.of(
+                .generateTrajectory(new Pose2d(0.75 - 1.19, -2.72, new Rotation2d(-Math.PI / 2)), List.of(
         
             ),
-                    // direction robot moves
-                new Pose2d(1, -6.105, new Rotation2d(-Math.PI / 2)), config);
+                // direction robot moves
+                new Pose2d(1, -6.205, new Rotation2d(-Math.PI / 2)), config);
                 
                 
     Field2d m_field = new Field2d();
@@ -261,13 +267,15 @@ public class RobotContainer {
         // Position controllers
         new PIDController(AutoConstants.kPXController, 1, AutoConstants.kDXController),
         new PIDController(AutoConstants.kPYController, 1, AutoConstants.kDYController), theta,
-        () -> {return new Rotation2d(-Math.PI/2);},
+        () -> {return new Rotation2d(-Math.PI/4.0);},
 
         swerve::setModuleStates,
 
         swerve
 
     );
+    // SendableChooser choose = new SendableChooser<Command>();
+    // SmartDashboard.putData(choose);
     // Pembroke 2-ball auto
     return new InstantCommand(() -> {
       intake.setIntake(1);
@@ -285,31 +293,57 @@ public class RobotContainer {
       if (shooter.atSpeed()) {
         conveyor.runConveyor();
       }
-    }, shooter, conveyor)).withTimeout(5)).andThen(new InstantCommand(() -> {
+    }, shooter, conveyor))
+    .withTimeout(5)).andThen(new InstantCommand(() -> {
       shooter.stopShooter();
       conveyor.stopConveyor();
-    }))
-    .andThen(new InstantCommand(() -> {
-      intake.setIntake(1);
-      intake.wheelsIn(0.8);
-      conveyor.autoConveyor();
-    }))
-    .andThen(ball1ToBall2Com)
-    .andThen(ball2ToHumanPlayerCom)
-    .andThen((new RunCommand(() -> {
-      shooter.visionShootLong();
-      hood.setHood(1);
-      if (shooter.atSpeed()) {
-        conveyor.runConveyor();
-      }
-    }, shooter, conveyor)).withTimeout(5));
+    }));
+    // two-ball ^
+    // .andThen(new InstantCommand(() -> {
+    //   intake.setIntake(1);
+    //   intake.wheelsIn(1);
+    // }, intake))
+    // .andThen(ball1ToBall2Com.raceWith(new RunCommand(conveyor::autoConveyor, conveyor)))
+    // .andThen(new RunCommand(() -> {
+    //   shooter.visionShootLong();
+    //   hood.setHood(1);
+    //   if (shooter.atSpeed()) {
+    //     conveyor.runConveyor();
+    //   }
+    // }, shooter, conveyor)).withTimeout(5)
+    // .andThen(new InstantCommand(() -> {
+    //   shooter.stopShooter();
+    //   conveyor.stopConveyor();
+    // }, shooter, conveyor));
 
-    // 3 ball auto path
+    // .andThen(ball1ToBall2Com.raceWith(new RunCommand(conveyor::autoConveyor, conveyor)));
+
+    // choose.addOption("2-Ball", twoBall);
+    // choose.getSelected();
+    // return choose.getSelected();
+
+    // .andThen(new InstantCommand(() -> {
+    //   intake.setIntake(1);
+    //   intake.wheelsIn(0.8);
+    //   conveyor.autoConveyor();
+    // }))
+    // .andThen(ball1ToBall2Com)
+    // .andThen(ball2ToHumanPlayerCom)
+    // .andThen((new RunCommand(() -> {
+    //   shooter.visionShootLong();
+    //   hood.setHood(1);
+    //   if (shooter.atSpeed()) {
+    //     conveyor.runConveyor();
+    //   }
+    // }, shooter, conveyor)).withTimeout(5));
+
+    // // 3 ball auto path
     // return new InstantCommand(() -> {
     //   intake.setIntake(1);
     //   intake.wheelsIn(0.8);
     //   conveyor.autoConveyor();
-    // }).andThen(swerveControllerCommand1).andThen(ball1ToBall2Com)
+    // }).andThen(swerveControllerCommand1)
+    // .andThen(ball1ToBall2Com)
     // .andThen(ball2ToHumanPlayerCom)
     // .andThen(new InstantCommand(() -> {
     //   intake.setIntake(0);
