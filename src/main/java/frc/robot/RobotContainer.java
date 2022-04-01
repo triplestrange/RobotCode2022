@@ -215,14 +215,21 @@ public class RobotContainer {
     
             ),
                 // direction robot moves
-                new Pose2d(0.75 - 1.19, -2.72, new Rotation2d(-Math.PI / 2)), config);
+                new Pose2d(0.75 - 1.25, -2.72, new Rotation2d(-Math.PI / 2)), config);
 
     Trajectory ball2ToHumanPlayer = TrajectoryGenerator
-                .generateTrajectory(new Pose2d(0.75 - 1.19, -2.72, new Rotation2d(-Math.PI / 2)), List.of(
+                .generateTrajectory(new Pose2d(0.75 - 1.25, -2.72, new Rotation2d(-Math.PI / 2)), List.of(
         
             ),
                 // direction robot moves
                 new Pose2d(1, -6.205, new Rotation2d(-Math.PI / 2)), config);
+
+    Trajectory ball1ToHumanPlayer = TrajectoryGenerator
+                .generateTrajectory(new Pose2d(1, 0, new Rotation2d(-Math.PI / 2)), List.of(
+        
+            ),
+                // direction robot moves
+                new Pose2d(0.65, -6.205, new Rotation2d(-Math.PI / 2)), config);
                 
                 
     Field2d m_field = new Field2d();
@@ -274,47 +281,48 @@ public class RobotContainer {
         swerve
 
     );
+
+    SwerveControllerCommand ball1ToHumanPlayerCom = new SwerveControllerCommand(ball1ToHumanPlayer,
+    swerve::getPose, // Functional interface to feed supplier
+    SwerveConstants.kDriveKinematics,
+
+    // Position controllers
+    new PIDController(AutoConstants.kPXController, 1, AutoConstants.kDXController),
+    new PIDController(AutoConstants.kPYController, 1, AutoConstants.kDYController), theta,
+    () -> {return new Rotation2d(-Math.PI/4.0);},
+
+    swerve::setModuleStates,
+
+    swerve
+
+);
+
     // SendableChooser choose = new SendableChooser<Command>();
     // SmartDashboard.putData(choose);
     // Pembroke 2-ball auto
-    return new InstantCommand(() -> {
-      intake.setIntake(1);
-      intake.wheelsIn(0.8);
-    }).andThen(swerveControllerCommand1).raceWith(new RunCommand(conveyor::autoConveyor, conveyor))
-    .andThen(new InstantCommand(() -> {
-      intake.setIntake(0);
-      intake.wheelsIn(0);
-      conveyor.stopConveyor();
-      swerve.drive(0, 0, 0, true);
-    }))
-    .andThen((new RunCommand(() -> {
-      shooter.visionShootLong();
-      hood.setHood(1);
-      if (shooter.atSpeed()) {
-        conveyor.runConveyor();
-      }
-    }, shooter, conveyor))
-    .withTimeout(5)).andThen(new InstantCommand(() -> {
-      shooter.stopShooter();
-      conveyor.stopConveyor();
-    }));
-    // two-ball ^
-    // .andThen(new InstantCommand(() -> {
+    // return new InstantCommand(() -> {
     //   intake.setIntake(1);
-    //   intake.wheelsIn(1);
-    // }, intake))
-    // .andThen(ball1ToBall2Com.raceWith(new RunCommand(conveyor::autoConveyor, conveyor)))
-    // .andThen(new RunCommand(() -> {
+    //   intake.wheelsIn(0.8);
+    // }).andThen(swerveControllerCommand1).raceWith(new RunCommand(conveyor::autoConveyor, conveyor))
+    // .andThen(new InstantCommand(() -> {
+    //   intake.setIntake(0);
+    //   intake.wheelsIn(0);
+    //   conveyor.stopConveyor();
+    //   swerve.drive(0, 0, 0, true);
+    // }))
+    // .andThen((new RunCommand(() -> {
     //   shooter.visionShootLong();
     //   hood.setHood(1);
     //   if (shooter.atSpeed()) {
     //     conveyor.runConveyor();
     //   }
-    // }, shooter, conveyor)).withTimeout(5)
-    // .andThen(new InstantCommand(() -> {
+    // }, shooter, conveyor))
+    // .withTimeout(4)).andThen(new InstantCommand(() -> {
     //   shooter.stopShooter();
     //   conveyor.stopConveyor();
-    // }, shooter, conveyor));
+    //   System.out.println("got here 1");
+    // }));
+    // two-ball ^
 
     // .andThen(ball1ToBall2Com.raceWith(new RunCommand(conveyor::autoConveyor, conveyor)));
 
@@ -341,15 +349,40 @@ public class RobotContainer {
     // return new InstantCommand(() -> {
     //   intake.setIntake(1);
     //   intake.wheelsIn(0.8);
-    //   conveyor.autoConveyor();
     // }).andThen(swerveControllerCommand1)
-    // .andThen(ball1ToBall2Com)
-    // .andThen(ball2ToHumanPlayerCom)
+    // .raceWith(new RunCommand(conveyor::autoConveyor, conveyor).withTimeout(2))
     // .andThen(new InstantCommand(() -> {
     //   intake.setIntake(0);
     //   intake.wheelsIn(0);
+    // }, intake))
+    // .andThen(new RunCommand(() -> {
     //   conveyor.stopConveyor();
-    // }));
+    //   hood.setHood(1);
+    //   shooter.visionShootLong();
+    //   if (shooter.atSpeed()) {
+    //     conveyor.runConveyor(1);
+    //   }
+    // }, shooter, conveyor, hood).withTimeout(5));
+
+    return swerveControllerCommand1.andThen(ball1ToHumanPlayerCom);
+    // .andThen(new InstantCommand(() -> {
+    //   shooter.stopShooter();
+    //   conveyor.stopConveyor();
+    // }, shooter, conveyor));
+
+
+    // .andThen(new RunCommand(() -> {
+    //   shooter.visionShootLong();
+    //   hood.setHood(1);
+    //   if (shooter.atSpeed()) {
+    //     conveyor.runConveyor(1);
+    //   }
+    // }, shooter, hood, conveyor).withTimeout(5))
+    // .andThen(new InstantCommand(() -> {
+    //   shooter.stopShooter();
+    //   conveyor.stopConveyor();
+    // }, shooter, conveyor))
+    // .andThen(ball1ToBall2Com);
     
   }
 }

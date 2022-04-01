@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.ResourceBundle.Control;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -13,11 +15,15 @@ import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Electrical;
+import frc.robot.Constants.SwerveConstants;
 
 public class Turret extends SubsystemBase {
   private CANSparkMax turretMotor;
@@ -28,13 +34,22 @@ public class Turret extends SubsystemBase {
   private NetworkTable table;
   private boolean normal = true;
   private boolean turnaround1 = false, turnaround2 = false;
-  
+  private Pose2d pose = new Pose2d(0, 0, new Rotation2d(0));
+  private SwerveDriveOdometry m_odometry;
+  private double horPos = 0;
+
   /** Creates a new Turret. */
   public Turret() {
+
+    // Odometry class for tracking robot pose
+    double gyroAng = SmartDashboard.getNumber("GYRO ANGLE", 0.0);
+    m_odometry = new SwerveDriveOdometry(SwerveConstants.kDriveKinematics, 
+      Rotation2d.fromDegrees((gyroAng + 180) * (SwerveConstants.kGyroReversed ? 1.0 : -1.0)));
+
     limitU = 200;
     limitL = -100;
     table = NetworkTableInstance.getDefault().getTable("turret");
-    
+
     turretMotor = new CANSparkMax(Electrical.turret, MotorType.kBrushless);
     turretMotor.restoreFactoryDefaults();
     turretMotor.setSmartCurrentLimit(30);
@@ -44,20 +59,20 @@ public class Turret extends SubsystemBase {
 
     turretMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     turretMotor.setSoftLimit(SoftLimitDirection.kReverse, limitL);
- 
+
     turretMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
     turretEncoder = turretMotor.getEncoder();
 
-    turretEncoder.setPositionConversionFactor(36.0/235/25.0*360.0);
+    turretEncoder.setPositionConversionFactor(36.0 / 235 / 25.0 * 360.0);
 
     m_turretPIDController = turretMotor.getPIDController();
 
     // PID coefficients
     kP = 0.1;
-    kFF = 1./11000.;
+    kFF = 1. / 11000.;
     kI = 0;
-    kD = 0; 
-    kIz = 0; 
+    kD = 0;
+    kIz = 0;
     kMaxOutput = 0.85;
     kMinOutput = -0.85;
 
@@ -76,12 +91,19 @@ public class Turret extends SubsystemBase {
     m_turretPIDController.setReference(setpointP, ControlType.kPosition);
   }
 
+  public void resetOdometry() {
+    // horizontal distance to center of hub
+    double dist = 0;
+    // TODO: convert turretEncoder position from rotations to radians
+    Pose2d pose = new Pose2d(dist, 0, new Rotation2d(turretEncoder.getPosition()));
+    m_odometry.resetPosition(pose, new Rotation2d(0));
+  }
+
   public void turretVision() {
     double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-    if (!turnaround1 && !turnaround2 ) {
+    if (!turnaround1 && !turnaround2) {
       if (tx != 0) {
         m_turretPIDController.setReference(tx * 0.02, ControlType.kDutyCycle);
-        System.out.println("vision time");
       } else {
         // faceGoal();
         // make it always face the goal
@@ -114,12 +136,12 @@ public class Turret extends SubsystemBase {
       // m_turretPIDController.setReference(0, ControlType.kDutyCycle);
     }
 
-    //Failsafe no wrap around code
-          // if(tx!= 0) {
-          //   m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
-          // } else {
-          //   m_turretPIDController.setReference(0, ControlType.kDutyCycle);
-          // }
+    // Failsafe no wrap around code
+    // if(tx!= 0) {
+    // m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
+    // } else {
+    // m_turretPIDController.setReference(0, ControlType.kDutyCycle);
+    // }
   }
 
   public boolean isStuck() {
@@ -145,10 +167,16 @@ public class Turret extends SubsystemBase {
     m_turretPIDController.setReference(heading, ControlType.kPosition);
   }
 
+  public void faceGoalOdometry() {
+    m_turretPIDController.setReference(pose.getRotation().getRadians() - 
+        Math.atan2(pose.getY(), pose.getX()), 
+        ControlType.kPosition);
+  }
+
   public void setVelocity() {
     m_turretPIDController.setReference(setpointV, ControlType.kVelocity);
   }
-  
+
   public void runRight() {
     turretMotor.set(0.25);
     turnaround1 = false;
@@ -181,8 +209,13 @@ public class Turret extends SubsystemBase {
     setpointP = SmartDashboard.getNumber("TurretSetpointP", 0.0);
     setpointV = SmartDashboard.getNumber("TurretSetpointV", 0.0);
     SmartDashboard.putNumber("TurretPos", turretEncoder.getPosition());
-    SmartDashboard.putNumber("ty", NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0));
-    SmartDashboard.putNumber("tx", NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0));
+    SmartDashboard.putNumber("ty",
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0));
+    SmartDashboard.putNumber("tx",
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0));
     SmartDashboard.putBoolean("Rumble", isStuck());
+
+    // TODO: assign horizontal position
+    // horPos = Math.
   }
 }

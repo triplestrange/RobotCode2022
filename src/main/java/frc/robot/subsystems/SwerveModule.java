@@ -144,8 +144,8 @@ public class SwerveModule {
 
     double steeringSetpoint = currentSteering + steeringError;
 
+    // m_driveMotor.set(desiredDrive + Math.cos(steeringError));
     m_driveMotor.set(desiredDrive);
-
     m_pidController.setReference(steeringSetpoint, ControlType.kPosition);
   }
 

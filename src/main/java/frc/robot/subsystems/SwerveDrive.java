@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants.Electrical;
 import frc.robot.Constants.ModuleConstants;
 // import frc.robot.Constants.ModuleConstants;
@@ -70,6 +71,9 @@ public class SwerveDrive extends SubsystemBase {
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry =
+      new SwerveDriveOdometry(SwerveConstants.kDriveKinematics, getAngle());
+
+  SwerveDriveOdometry m_odometryTur = 
       new SwerveDriveOdometry(SwerveConstants.kDriveKinematics, getAngle());
 
   /**
