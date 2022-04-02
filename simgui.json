@@ -11,11 +11,70 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Climber": "Subsystem",
+      "/LiveWindow/Conveyor/Sensor1": "Digital Input",
+      "/LiveWindow/Conveyor/Sensor2": "Digital Input",
+      "/LiveWindow/Hood": "Subsystem",
       "/LiveWindow/Intake": "Subsystem",
       "/LiveWindow/Shooter": "Subsystem",
       "/LiveWindow/SwerveDrive": "Subsystem",
+      "/LiveWindow/Turret": "Subsystem",
+      "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[6]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
-      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro"
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/SmartDashboard/Climber": "Subsystem",
+      "/SmartDashboard/Conveyor": "Subsystem",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Intake": "Subsystem",
+      "/SmartDashboard/Scheduler": "Scheduler",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/Shooter": "Subsystem",
+      "/SmartDashboard/SwerveDrive": "Subsystem",
+      "/SmartDashboard/Turret": "Subsystem"
+    },
+    "windows": {
+      "/LiveWindow/Hood": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/LiveWindow/Shooter": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/LiveWindow/SwerveDrive": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/LiveWindow/Turret": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/LiveWindow/Ungrouped/Scheduler": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "SmartDashboard": {
+      "Scheduler": {
+        "open": true
+      },
+      "open": true
     }
   }
 }

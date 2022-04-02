@@ -22,6 +22,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.Electrical;
 import frc.robot.Constants.SwerveConstants;
 
@@ -31,12 +32,9 @@ public class Turret extends SubsystemBase {
   private SparkMaxPIDController m_turretPIDController;
   private double kP, kFF, kI, kD, kIz, kMaxOutput, kMinOutput, setpointP, setpointV;
   private float limitU, limitL;
-  private NetworkTable table;
-  private boolean normal = true;
   private boolean turnaround1 = false, turnaround2 = false;
   private Pose2d pose = new Pose2d(0, 0, new Rotation2d(0));
-  private SwerveDriveOdometry m_odometry;
-  private double horPos = 0;
+  public SwerveDriveOdometry m_odometry;
 
   /** Creates a new Turret. */
   public Turret() {
@@ -46,9 +44,8 @@ public class Turret extends SubsystemBase {
     m_odometry = new SwerveDriveOdometry(SwerveConstants.kDriveKinematics, 
       Rotation2d.fromDegrees((gyroAng + 180) * (SwerveConstants.kGyroReversed ? 1.0 : -1.0)));
 
-    limitU = 200;
-    limitL = -100;
-    table = NetworkTableInstance.getDefault().getTable("turret");
+    limitU = (float) SmartDashboard.getNumber("TurLimU", 210f);
+    limitL = (float) SmartDashboard.getNumber("TurLimL", -137f);
 
     turretMotor = new CANSparkMax(Electrical.turret, MotorType.kBrushless);
     turretMotor.restoreFactoryDefaults();
@@ -73,8 +70,8 @@ public class Turret extends SubsystemBase {
     kI = 0;
     kD = 0;
     kIz = 0;
-    kMaxOutput = 0.85;
-    kMinOutput = -0.85;
+    kMaxOutput = .9;
+    kMinOutput = -0.9;
 
     // // set PID coefficients
     m_turretPIDController.setP(kP);
@@ -91,21 +88,14 @@ public class Turret extends SubsystemBase {
     m_turretPIDController.setReference(setpointP, ControlType.kPosition);
   }
 
-  public void resetOdometry() {
-    // horizontal distance to center of hub
-    double dist = 0;
-    // TODO: convert turretEncoder position from rotations to radians
-    Pose2d pose = new Pose2d(dist, 0, new Rotation2d(turretEncoder.getPosition()));
-    m_odometry.resetPosition(pose, new Rotation2d(0));
-  }
-
   public void turretVision() {
     double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
     if (!turnaround1 && !turnaround2) {
       if (tx != 0) {
         m_turretPIDController.setReference(tx * 0.02, ControlType.kDutyCycle);
       } else {
-        // faceGoal();
+        faceGoalOdometry();
+        System.out.println("No target");
         // make it always face the goal
       }
     }
@@ -146,7 +136,6 @@ public class Turret extends SubsystemBase {
 
   public boolean isStuck() {
     if (Math.abs(turretMotor.getAppliedOutput()) > 0.045 && turretEncoder.getVelocity() < 0.025) {
-      System.out.println("STUCK");
       return true;
     }
     return false;
@@ -168,8 +157,18 @@ public class Turret extends SubsystemBase {
   }
 
   public void faceGoalOdometry() {
-    m_turretPIDController.setReference(pose.getRotation().getRadians() - 
-        Math.atan2(pose.getY(), pose.getX()), 
+    double rot = Math.toDegrees(pose.getRotation().getRadians() 
+      - Math.atan2(pose.getY(), pose.getX()));
+    System.out.println("ROT: " + rot);
+    while (rot > limitU) {
+      rot -= 360;
+    }
+    while (rot < limitL) {
+      rot += 360;
+    }
+
+    m_turretPIDController.setReference(
+        rot, 
         ControlType.kPosition);
   }
 
@@ -215,7 +214,14 @@ public class Turret extends SubsystemBase {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0));
     SmartDashboard.putBoolean("Rumble", isStuck());
 
-    // TODO: assign horizontal position
-    // horPos = Math.
+    if (SmartDashboard.getBoolean("Blind me", true)) {
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
+    } else {
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+    }
+
+    pose = RobotContainer.swerve.m_odometryTur.getPoseMeters();
+
+    
   }
 }

@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.RunClimb;
+import frc.robot.commands.autoRoutines.Autos;
 import frc.robot.subsystems.*;
 import frc.robot.Robot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -57,11 +59,13 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Intake intake;
   private final Shooter shooter;
-  public final SwerveDrive swerve;
+  public static SwerveDrive swerve;
   private final Turret turret;
   private final Conveyor conveyor;
   public final Climber climb;
   private final Hood hood;
+
+  private final Autos autos;
 
   public static Joystick m_driverController;
   public static Joystick m_operatorController;
@@ -72,11 +76,7 @@ public class RobotContainer {
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
-  public RobotContainer() {
-    theta = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0,
-        AutoConstants.kThetaControllerConstraints);
-
-        
+  public RobotContainer(SendableChooser<Command> choose) {        
     m_driverController = new Joystick(0);
     m_operatorController = new Joystick(1);
 
@@ -87,6 +87,7 @@ public class RobotContainer {
     turret = new Turret();
     climb = new Climber();
     hood = new Hood();
+    autos = new Autos(swerve, intake, conveyor, hood, shooter);
 
     SmartDashboard.putData(intake);
     SmartDashboard.putData(shooter);
@@ -97,6 +98,14 @@ public class RobotContainer {
 
     // Configure the button bindings
     configCommands();
+
+    SmartDashboard.putBoolean("Blind me", true);
+
+    // autos
+    choose.addOption("TwoBall", autos.getTwoBall());
+    choose.addOption("ThreeBall - shoot first", autos.getThreeBallA());
+    choose.addOption("ThreeBall - regular", autos.getThreeBallB());
+    choose.addOption("FiveBall", autos.getFiveBall());
 
   }
 
@@ -136,7 +145,15 @@ public class RobotContainer {
     // reset gyro is left wing
     //shoot ball
     drBump.whileHeld(new ShootBall(shooter, conveyor));
-    dlBump.whileHeld(new ShootBallSlow(shooter, conveyor));
+    // dlBump.whileHeld(new ShootBallSlow(shooter, conveyor));
+    // drBump.whileHeld(new RunCommand(() -> {
+    //   if (shooter.atSpeed()) {
+    //     conveyor.runConveyor();
+    //   } else {
+    //     conveyor.stopConveyor();
+    //   }
+    //   swerve.resetOdometryTur();
+    // }, conveyor)); 
 
     //manual turret
     dlWing.whileHeld(new InstantCommand(()->turret.runLeft(), turret));
@@ -175,6 +192,7 @@ public class RobotContainer {
 
     //intake
     oprBump.whileHeld(new LoadBall(intake, conveyor, 1));
+    dlBump.whileHeld(new LoadBall(intake, conveyor, 1));
 
     //outtake
     oplBump.whileHeld(new LoadBall(intake, conveyor, -1));
@@ -182,8 +200,12 @@ public class RobotContainer {
     swerve.setDefaultCommand(new DefaultDrive(swerve, m_driverController, 1));
     climb.setDefaultCommand(new RunClimb(climb, m_operatorController));
     turret.setDefaultCommand(new AimBot(turret, hood));
+    // for constantly running shooter
+    // shooter.setDefaultCommand(new ShootBall(shooter, conveyor));
     swerve.resetEncoders();
     // intake.setDefaultCommand(new ManualFeeder(intake, conveyor, m_operatorController));
+
+    
 
   }
 
@@ -192,197 +214,10 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    TrajectoryConfig config = new TrajectoryConfig(1.5,
-    AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        // .setKinematics(SwerveDriveConstants.kDriveKinematics)
-        .setStartVelocity(0)
-        .setEndVelocity(0);
-
-    /********************************************************* */
-    // An ExampleCommand will run in autonomous
-    //return new Auto1(intake, conveyor, shooter, swerve, theta);
-    Trajectory trajectory = TrajectoryGenerator
-        .generateTrajectory(new Pose2d(0, 0, new Rotation2d(0)), List.of(
-
-        ),
-            // direction robot moves
-            new Pose2d(1, 0, new Rotation2d(0)), config);
-
-    Trajectory ball1ToBall2 = TrajectoryGenerator
-            .generateTrajectory(new Pose2d(0.75, 0, new Rotation2d(-Math.PI / 2)), List.of(
+  // public Command getAutonomousCommand() {
     
-            ),
-                // direction robot moves
-                new Pose2d(0.75 - 1.25, -2.72, new Rotation2d(-Math.PI / 2)), config);
-
-    Trajectory ball2ToHumanPlayer = TrajectoryGenerator
-                .generateTrajectory(new Pose2d(0.75 - 1.25, -2.72, new Rotation2d(-Math.PI / 2)), List.of(
-        
-            ),
-                // direction robot moves
-                new Pose2d(1, -6.205, new Rotation2d(-Math.PI / 2)), config);
-
-    Trajectory ball1ToHumanPlayer = TrajectoryGenerator
-                .generateTrajectory(new Pose2d(1, 0, new Rotation2d(-Math.PI / 2)), List.of(
-        
-            ),
-                // direction robot moves
-                new Pose2d(0.65, -6.205, new Rotation2d(-Math.PI / 2)), config);
-                
-                
-    Field2d m_field = new Field2d();
-    SmartDashboard.putData(m_field);
-    m_field.getObject("traj").setTrajectory(trajectory);
-    m_field.getObject("traj").setTrajectory(ball1ToBall2);
-
-    SwerveControllerCommand swerveControllerCommand1 = new SwerveControllerCommand(trajectory,
-        swerve::getPose, // Functional interface to feed supplier
-        SwerveConstants.kDriveKinematics,
-
-        // Position controllers
-        new PIDController(AutoConstants.kPXController, 1, AutoConstants.kDXController),
-        new PIDController(AutoConstants.kPYController, 1, AutoConstants.kDYController), theta,
-        () -> {return new Rotation2d(0);}, 
-
-        swerve::setModuleStates,
-
-        swerve
-
-    );
-
-    SwerveControllerCommand ball1ToBall2Com = new SwerveControllerCommand(ball1ToBall2,
-        swerve::getPose, // Functional interface to feed supplier
-        SwerveConstants.kDriveKinematics,
-
-        // Position controllers
-        new PIDController(AutoConstants.kPXController, 1, AutoConstants.kDXController),
-        new PIDController(AutoConstants.kPYController, 1, AutoConstants.kDYController), theta,
-        () -> {return new Rotation2d(-Math.PI/2);},
-
-        swerve::setModuleStates,
-
-        swerve
-
-    );
-
-    SwerveControllerCommand ball2ToHumanPlayerCom = new SwerveControllerCommand(ball2ToHumanPlayer,
-        swerve::getPose, // Functional interface to feed supplier
-        SwerveConstants.kDriveKinematics,
-
-        // Position controllers
-        new PIDController(AutoConstants.kPXController, 1, AutoConstants.kDXController),
-        new PIDController(AutoConstants.kPYController, 1, AutoConstants.kDYController), theta,
-        () -> {return new Rotation2d(-Math.PI/4.0);},
-
-        swerve::setModuleStates,
-
-        swerve
-
-    );
-
-    SwerveControllerCommand ball1ToHumanPlayerCom = new SwerveControllerCommand(ball1ToHumanPlayer,
-    swerve::getPose, // Functional interface to feed supplier
-    SwerveConstants.kDriveKinematics,
-
-    // Position controllers
-    new PIDController(AutoConstants.kPXController, 1, AutoConstants.kDXController),
-    new PIDController(AutoConstants.kPYController, 1, AutoConstants.kDYController), theta,
-    () -> {return new Rotation2d(-Math.PI/4.0);},
-
-    swerve::setModuleStates,
-
-    swerve
-
-);
-
-    // SendableChooser choose = new SendableChooser<Command>();
-    // SmartDashboard.putData(choose);
-    // Pembroke 2-ball auto
-    // return new InstantCommand(() -> {
-    //   intake.setIntake(1);
-    //   intake.wheelsIn(0.8);
-    // }).andThen(swerveControllerCommand1).raceWith(new RunCommand(conveyor::autoConveyor, conveyor))
-    // .andThen(new InstantCommand(() -> {
-    //   intake.setIntake(0);
-    //   intake.wheelsIn(0);
-    //   conveyor.stopConveyor();
-    //   swerve.drive(0, 0, 0, true);
-    // }))
-    // .andThen((new RunCommand(() -> {
-    //   shooter.visionShootLong();
-    //   hood.setHood(1);
-    //   if (shooter.atSpeed()) {
-    //     conveyor.runConveyor();
-    //   }
-    // }, shooter, conveyor))
-    // .withTimeout(4)).andThen(new InstantCommand(() -> {
-    //   shooter.stopShooter();
-    //   conveyor.stopConveyor();
-    //   System.out.println("got here 1");
-    // }));
-    // two-ball ^
-
-    // .andThen(ball1ToBall2Com.raceWith(new RunCommand(conveyor::autoConveyor, conveyor)));
-
-    // choose.addOption("2-Ball", twoBall);
-    // choose.getSelected();
-    // return choose.getSelected();
-
-    // .andThen(new InstantCommand(() -> {
-    //   intake.setIntake(1);
-    //   intake.wheelsIn(0.8);
-    //   conveyor.autoConveyor();
-    // }))
-    // .andThen(ball1ToBall2Com)
-    // .andThen(ball2ToHumanPlayerCom)
-    // .andThen((new RunCommand(() -> {
-    //   shooter.visionShootLong();
-    //   hood.setHood(1);
-    //   if (shooter.atSpeed()) {
-    //     conveyor.runConveyor();
-    //   }
-    // }, shooter, conveyor)).withTimeout(5));
-
-    // // 3 ball auto path
-    // return new InstantCommand(() -> {
-    //   intake.setIntake(1);
-    //   intake.wheelsIn(0.8);
-    // }).andThen(swerveControllerCommand1)
-    // .raceWith(new RunCommand(conveyor::autoConveyor, conveyor).withTimeout(2))
-    // .andThen(new InstantCommand(() -> {
-    //   intake.setIntake(0);
-    //   intake.wheelsIn(0);
-    // }, intake))
-    // .andThen(new RunCommand(() -> {
-    //   conveyor.stopConveyor();
-    //   hood.setHood(1);
-    //   shooter.visionShootLong();
-    //   if (shooter.atSpeed()) {
-    //     conveyor.runConveyor(1);
-    //   }
-    // }, shooter, conveyor, hood).withTimeout(5));
-
-    return swerveControllerCommand1.andThen(ball1ToHumanPlayerCom);
-    // .andThen(new InstantCommand(() -> {
-    //   shooter.stopShooter();
-    //   conveyor.stopConveyor();
-    // }, shooter, conveyor));
-
-
-    // .andThen(new RunCommand(() -> {
-    //   shooter.visionShootLong();
-    //   hood.setHood(1);
-    //   if (shooter.atSpeed()) {
-    //     conveyor.runConveyor(1);
-    //   }
-    // }, shooter, hood, conveyor).withTimeout(5))
-    // .andThen(new InstantCommand(() -> {
-    //   shooter.stopShooter();
-    //   conveyor.stopConveyor();
-    // }, shooter, conveyor))
-    // .andThen(ball1ToBall2Com);
+  //   // System.out.println(choose.getSelected());
+  //   return choose.getSelected();
     
-  }
+  // }
 }

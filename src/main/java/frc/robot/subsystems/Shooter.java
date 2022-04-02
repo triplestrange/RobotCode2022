@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.Electrical;
 
 public class Shooter extends SubsystemBase {
@@ -56,10 +57,10 @@ public class Shooter extends SubsystemBase {
 
     m_encoder = shooter1.getEncoder();
 
-    kP = 0.0001;
-    kI = 0.0000005;
+    kP = 0.0002;
+    kI = 0.0001;
     kD = 0.0000006;
-    kIz = 0.1;
+    kIz = 1;
     // kFF = 0;
     kFF = 1.0/5000.0;
     kMaxOutput = 1;
@@ -98,7 +99,7 @@ public class Shooter extends SubsystemBase {
    *    whether shooter speed is at the setpoint
    */
   public boolean atSpeed() {
-    return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.015; 
+    return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.05; 
   }
 
   public void setShooter(double speed) {
@@ -117,21 +118,11 @@ public class Shooter extends SubsystemBase {
     shooter1.set(0);
   }
 
-
-  // public void setHood(int pos) {
-  //   if (pos == 0) {
-  //     hoodPiston.set(Value.kReverse);
-  //     setExtended(false);
-  //   } else {
-  //     hoodPiston.set(Value.kForward);
-  //     setExtended(true);
-  //   }
-  // }
 //0and-19back
   public void visionShootShort() {
     double offset = SmartDashboard.getNumber("ChangeShortShoot", 0);
-    Double yVals[] = {-22.12, -17.12, -13.18,-11.840997, -6.470101, 0.8};
-    Double speed[] = {3800.0, 3550.0, 3150.0, 3000.0, 3000.0, 2750.0}; // 2750 for last one
+    Double yVals[] = Constants.Shooting.yValsShort;
+    Double speed[] = Constants.Shooting.speedShort; 
 
     double val = 0;
     for (int x = 0; x < yVals.length - 1; x++) {
@@ -147,7 +138,6 @@ public class Shooter extends SubsystemBase {
       
     }
 
-    System.out.println("short");
 
     SmartDashboard.putNumber("ShooterSetpoint", val);
     setpoint = val;
@@ -155,19 +145,10 @@ public class Shooter extends SubsystemBase {
   }
 
   public void visionShootLong() {
-    double offset = SmartDashboard.getNumber("ChangeLongShoot", 0);
+    // double offset = SmartDashboard.getNumber("ChangeLongShoot", 0);
 
-
-    Double yVals[] = {-19.01, -16.19, -10.65, -3.80};
-
-    //initial
-    Double speed[] = {3950.0, 3600.0, 3300.0, 3000.0};
-
-    //not enough
-    //Double speed[] = {4700.0, 4300.0, 3600.0, 3300.0};
-
-    //mayhaps
-    // Double speed[] = {5000.0 , 4600.0, 4000.0, 3800.0 };
+    Double yVals[] = Constants.Shooting.yValsLong;
+    Double speed[] = Constants.Shooting.speedLong; 
 
 
     double val = 0;
@@ -236,5 +217,10 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Output", shooter1.getAppliedOutput());
     SmartDashboard.putNumber("ShooterSpeed", m_encoder.getVelocity());
     kP = SmartDashboard.getNumber("kP", 1.0);
+    
+    SmartDashboard.putNumber("ShooterIaccum", m_pidController.getIAccum());
+    SmartDashboard.putNumber("ShooterP", m_pidController.getP());
+    SmartDashboard.putNumber("ShooterI", m_pidController.getI());
+    SmartDashboard.putNumber("ShooterD", m_pidController.getD());
   }
 }

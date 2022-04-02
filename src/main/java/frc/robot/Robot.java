@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -22,7 +23,7 @@ import edu.wpi.first.math.geometry.Pose2d;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
+  private SendableChooser<Command> choose;
   private RobotContainer m_robotContainer;
   
 
@@ -34,7 +35,12 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+
+    choose = new SendableChooser<Command>();
+    SmartDashboard.putData(choose);
+
+    m_robotContainer = new RobotContainer(choose);
+
 
     // PortForwarder.add(5800, "limelight.local", 5800);
     // PortForwarder.add(5801, "limelight.local", 5801);
@@ -73,9 +79,11 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = choose.getSelected();
 
     m_robotContainer.swerve.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)));
+    m_robotContainer.swerve.resetOdometryTur();
     // m_robotContainer.climb.extend();
 
     // schedule the autonomous command (example)

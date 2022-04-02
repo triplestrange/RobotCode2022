@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -64,6 +65,7 @@ public class SwerveDrive extends SubsystemBase {
 
   private SwerveModuleState[] swerveModuleStates;
   private SwerveModuleState[] initStates;
+  private double horPos;
 
   // The gyro sensor
   private static final Gyro navX = new AHRS(SPI.Port.kMXP);
@@ -129,6 +131,28 @@ public class SwerveDrive extends SubsystemBase {
         SmartDashboard.putNumber("y", getPose().getTranslation().getY());
         SmartDashboard.putNumber("r", getPose().getRotation().getDegrees());
         SmartDashboard.putNumber("GYRO ANGLE", navX.getAngle());
+    m_odometryTur.update(getAngle(), 
+      m_frontLeft.getState(),
+      m_rearLeft.getState(),
+      m_frontRight.getState(),
+      m_rearRight.getState());
+
+    SmartDashboard.putNumber("TurOdomX", m_odometryTur.getPoseMeters().getX());
+    SmartDashboard.putNumber("TurOdomY", m_odometryTur.getPoseMeters().getY());
+    SmartDashboard.putNumber("TurOdomR", m_odometryTur.getPoseMeters().getRotation().getRadians());
+
+    double height = 0.864; // of limelight
+    double hub = 2.64;
+    double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0);
+    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0);
+    // TODO: assign horizontal position
+    if (SmartDashboard.getBoolean("Long Range", true)) {
+      horPos = (hub - height) / Math.tan(Math.toRadians(ty + 35.5)) + 0.6;
+    } else {
+      horPos = (hub - height) / Math.tan(Math.toRadians(ty + 35.5 + 12)) + 0.6;
+    }
+
+    SmartDashboard.putNumber("goalDist", horPos);
   }
 
   /**
@@ -147,6 +171,12 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     m_odometry.resetPosition(pose, getAngle());
+  }
+
+  public void resetOdometryTur() {
+    double turretPos = SmartDashboard.getNumber("TurretPos", 0.0);
+    Pose2d pose = new Pose2d(horPos, 0, new Rotation2d(Math.toRadians(turretPos)));
+    m_odometryTur.resetPosition(pose, getAngle());
   }
 
   /**
