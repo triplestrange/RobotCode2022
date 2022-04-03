@@ -145,16 +145,7 @@ public class RobotContainer {
     // reset gyro is left wing
     //shoot ball
     drBump.whileHeld(new ShootBall(shooter, conveyor));
-    // dlBump.whileHeld(new ShootBallSlow(shooter, conveyor));
-    // drBump.whileHeld(new RunCommand(() -> {
-    //   if (shooter.atSpeed()) {
-    //     conveyor.runConveyor();
-    //   } else {
-    //     conveyor.stopConveyor();
-    //   }
-    //   swerve.resetOdometryTur();
-    // }, conveyor)); 
-
+    drBump.whenReleased(new InstantCommand(conveyor::stopConveyor, conveyor));
     //manual turret
     dlWing.whileHeld(new InstantCommand(()->turret.runLeft(), turret));
     dlWing.whenReleased(new InstantCommand(()->turret.stop(), turret));
@@ -200,6 +191,7 @@ public class RobotContainer {
     swerve.setDefaultCommand(new DefaultDrive(swerve, m_driverController, 1));
     climb.setDefaultCommand(new RunClimb(climb, m_operatorController));
     turret.setDefaultCommand(new AimBot(turret, hood));
+    shooter.setDefaultCommand(new RunCommand(() -> {shooter.setShooter(3000);}, shooter));
     // for constantly running shooter
     // shooter.setDefaultCommand(new ShootBall(shooter, conveyor));
     swerve.resetEncoders();

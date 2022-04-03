@@ -36,7 +36,8 @@ public class ShootBall extends CommandBase {
     if (shooter.atSpeed()) {
       conveyor.runConveyor();
     } else {
-      conveyor.stopConveyor();
+      if (SmartDashboard.getNumber("ShooterSetpoint", 100) > 3050)
+        conveyor.autoConveyor();
     }
 
     if (!extended) {
@@ -49,7 +50,7 @@ public class ShootBall extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.stopShooter();
+    // shooter.stopShooter();
     conveyor.stopConveyor();
   }
 

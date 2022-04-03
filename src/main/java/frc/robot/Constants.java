@@ -109,10 +109,12 @@ public final class Constants {
 
     public static final class Shooting {
       public static final Double yValsShort[] = {-22.12, -17.12, -13.18,-11.840997, -6.470101, 0.8};
-      public static final Double speedShort[] = {3800.0, 3550.0, 3150.0, 3000.0, 3000.0, 2750.0};
+      public static final Double speedShort[] = {3850.0, 3600.0, 3200.0, 3050.0, 3050.0, 2800.0};
+      public static final double angShort = 77; // deg
 
       public static final Double yValsLong[] = {-19.01, -16.19, -10.65, -3.80};
-      public static final Double speedLong[] = {3950.0, 3600.0, 3300.0, 3000.0};
+      public static final Double speedLong[] = {3900.0, 3550.0, 3250.0, 3000.0};
+      public static final double angLong = 65; // deg
 
       public static final double height = .864; // of limelight
       public static final double hub = 2.64;

@@ -58,9 +58,10 @@ public class Shooter extends SubsystemBase {
     m_encoder = shooter1.getEncoder();
 
     kP = 0.0002;
-    kI = 0.0001;
+    kI = 0.0000001;
     kD = 0.0000006;
-    kIz = 1;
+    // units - rpm
+    kIz = 250;
     // kFF = 0;
     kFF = 1.0/5000.0;
     kMaxOutput = 1;
@@ -99,7 +100,11 @@ public class Shooter extends SubsystemBase {
    *    whether shooter speed is at the setpoint
    */
   public boolean atSpeed() {
-    return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.05; 
+    if (m_encoder.getVelocity() > 3000.0) {
+      return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.015; 
+    }
+    return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.04; 
+
   }
 
   public void setShooter(double speed) {

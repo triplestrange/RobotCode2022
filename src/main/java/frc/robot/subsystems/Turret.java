@@ -65,7 +65,7 @@ public class Turret extends SubsystemBase {
     m_turretPIDController = turretMotor.getPIDController();
 
     // PID coefficients
-    kP = 0.1;
+    kP = 0.35;
     kFF = 1. / 11000.;
     kI = 0;
     kD = 0;

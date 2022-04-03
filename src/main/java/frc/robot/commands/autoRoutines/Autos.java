@@ -94,7 +94,7 @@ public class Autos extends SubsystemBase {
     
             ),
                 // direction robot moves
-                new Pose2d(0.75 - .3, -2.7, new Rotation2d(-Math.PI / 2)), config);
+                new Pose2d(0.2, -3.2, new Rotation2d(-Math.PI / 2)), config);
 
     return new SwerveControllerCommand(ball1ToBall2,
         swerve::getPose, // Functional interface to feed supplier
@@ -114,7 +114,7 @@ public class Autos extends SubsystemBase {
 
   public SwerveControllerCommand bob2() {
     Trajectory ball2ToHumanPlayer = TrajectoryGenerator
-                .generateTrajectory(new Pose2d(0.75 - 0.3, -2.7, new Rotation2d(-Math.PI / 2)), List.of(
+                .generateTrajectory(new Pose2d(0.2, -3.2, new Rotation2d(-Math.PI / 2)), List.of(
         
             ),
                 // direction robot moves
@@ -141,7 +141,7 @@ public class Autos extends SubsystemBase {
         
             ),
                 // direction robot moves
-                new Pose2d(0.3, -5.5, new Rotation2d(Math.PI / 4.0)), config);
+                new Pose2d(0.3, -4, new Rotation2d(Math.PI / 4.0)), config);
     return new SwerveControllerCommand(humanPlayerToBall2,
         swerve::getPose, // Functional interface to feed supplier
         SwerveConstants.kDriveKinematics,
@@ -159,11 +159,12 @@ public class Autos extends SubsystemBase {
   }
 
   public Command getTwoBall() {
-    Command twoBall = new InstantCommand(() -> {
-      intake.setIntake(1);
-      intake.wheelsIn(0.5);
-    }, intake).andThen(
-     bob()).raceWith(new RunCommand(conveyor::autoConveyor, conveyor))
+    Command twoBall = 
+     bob().raceWith(new RunCommand(() -> {
+       intake.setIntake(1);
+       intake.wheelsIn(1);
+       conveyor.autoConveyor();
+      }, conveyor))
     .andThen(new InstantCommand(() -> {
       conveyor.stopConveyor();
       swerve.drive(0, 0, 0, true);
@@ -314,7 +315,7 @@ public class Autos extends SubsystemBase {
        if (shooter.atSpeed()) {
          conveyor.runConveyor();
        } else {
-         conveyor.stopConveyor();
+         conveyor.autoConveyor();
        }
      }, shooter, conveyor).withTimeout(2)
      .andThen(new InstantCommand(() -> {
