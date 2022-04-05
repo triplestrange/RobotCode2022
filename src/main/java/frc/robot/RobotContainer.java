@@ -105,7 +105,7 @@ public class RobotContainer {
     choose.addOption("TwoBall", autos.getTwoBall());
     choose.addOption("ThreeBall - shoot first", autos.getThreeBallA());
     choose.addOption("ThreeBall - regular", autos.getThreeBallB());
-    choose.addOption("FiveBall", autos.getFiveBall());
+    choose.addOption("FiveBall - regular", autos.getFiveBallStable());
 
   }
 
@@ -146,11 +146,15 @@ public class RobotContainer {
     //shoot ball
     drBump.whileHeld(new ShootBall(shooter, conveyor));
     drBump.whenReleased(new InstantCommand(conveyor::stopConveyor, conveyor));
+    dlBump.whileHeld(new ShootBallSlow(shooter, conveyor));
+    dlBump.whenReleased(new InstantCommand(conveyor::stopConveyor, conveyor));
     //manual turret
     dlWing.whileHeld(new InstantCommand(()->turret.runLeft(), turret));
     dlWing.whenReleased(new InstantCommand(()->turret.stop(), turret));
     drWing.whileHeld(new InstantCommand(()->turret.runRight(), turret));
     drWing.whileHeld(new InstantCommand(()->turret.stop(), turret));
+
+    dA.whenPressed(new InstantCommand(shooter::stopShooter, shooter));
 
     if (SmartDashboard.getBoolean("Rumble", false)) {
       m_driverController.setRumble(RumbleType.kLeftRumble, 0.1);
@@ -183,7 +187,7 @@ public class RobotContainer {
 
     //intake
     oprBump.whileHeld(new LoadBall(intake, conveyor, 1));
-    dlBump.whileHeld(new LoadBall(intake, conveyor, 1));
+    // dlBump.whileHeld(new LoadBall(intake, conveyor, 1));
 
     //outtake
     oplBump.whileHeld(new LoadBall(intake, conveyor, -1));
@@ -191,9 +195,8 @@ public class RobotContainer {
     swerve.setDefaultCommand(new DefaultDrive(swerve, m_driverController, 1));
     climb.setDefaultCommand(new RunClimb(climb, m_operatorController));
     turret.setDefaultCommand(new AimBot(turret, hood));
-    shooter.setDefaultCommand(new RunCommand(() -> {shooter.setShooter(3000);}, shooter));
+    // shooter.setDefaultCommand(new RunCommand(() -> {shooter.setShooter(3000);}, shooter));
     // for constantly running shooter
-    // shooter.setDefaultCommand(new ShootBall(shooter, conveyor));
     swerve.resetEncoders();
     // intake.setDefaultCommand(new ManualFeeder(intake, conveyor, m_operatorController));
 

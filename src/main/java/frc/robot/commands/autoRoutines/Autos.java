@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -161,6 +162,7 @@ public class Autos extends SubsystemBase {
   public Command getTwoBall() {
     Command twoBall = 
      bob().raceWith(new RunCommand(() -> {
+       shooter.setShooter(3000);
        intake.setIntake(1);
        intake.wheelsIn(1);
        conveyor.autoConveyor();
@@ -196,7 +198,7 @@ public class Autos extends SubsystemBase {
       } 
     }, shooter, conveyor).withName("SHOOT").withTimeout(2)
     .andThen(new InstantCommand(() -> {
-      shooter.stopShooter();
+      shooter.setShooter(3000);
       conveyor.stopConveyor();
       intake.setIntake(1);
       intake.wheelsIn();
@@ -220,7 +222,7 @@ public class Autos extends SubsystemBase {
       }
     }).withTimeout(3))
     .andThen(new InstantCommand(() -> {
-      shooter.stopShooter();
+      shooter.setShooter(3000);
       conveyor.stopConveyor();
     }, shooter, conveyor));
   }
@@ -228,7 +230,8 @@ public class Autos extends SubsystemBase {
   public Command getThreeBallB() {
 
     return new InstantCommand(() -> {
-     intake.setIntake(1);
+      shooter.setShooter(3000);
+      intake.setIntake(1);
       intake.wheelsIn();
     }, shooter, conveyor, intake)
     .andThen(bob().raceWith(
@@ -265,8 +268,9 @@ public class Autos extends SubsystemBase {
     }, shooter, conveyor));
   }
 
-  public Command getFiveBall() {
+  public Command getFiveBallStable() {
     return new InstantCommand(() -> {
+      shooter.setShooter(3000);
       intake.setIntake(1);
        intake.wheelsIn(1);
      }, shooter, conveyor, intake)
@@ -301,7 +305,7 @@ public class Autos extends SubsystemBase {
        }
      }).withTimeout(1.25))
      .andThen(new InstantCommand(() -> {
-       shooter.stopShooter();
+       shooter.setShooter(3000);
        conveyor.stopConveyor();
        intake.wheelsIn(1);
        intake.setIntake(1);
@@ -320,7 +324,7 @@ public class Autos extends SubsystemBase {
      }, shooter, conveyor).withTimeout(2)
      .andThen(new InstantCommand(() -> {
         conveyor.stopConveyor();
-        shooter.stopShooter();
+        shooter.setShooter(3000);
      }, conveyor, shooter)));
   }
 

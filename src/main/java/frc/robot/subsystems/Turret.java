@@ -44,7 +44,7 @@ public class Turret extends SubsystemBase {
     m_odometry = new SwerveDriveOdometry(SwerveConstants.kDriveKinematics, 
       Rotation2d.fromDegrees((gyroAng + 180) * (SwerveConstants.kGyroReversed ? 1.0 : -1.0)));
 
-    limitU = (float) SmartDashboard.getNumber("TurLimU", 210f);
+    limitU = (float) SmartDashboard.getNumber("TurLimU", 223f);
     limitL = (float) SmartDashboard.getNumber("TurLimL", -137f);
 
     turretMotor = new CANSparkMax(Electrical.turret, MotorType.kBrushless);
@@ -95,29 +95,28 @@ public class Turret extends SubsystemBase {
         m_turretPIDController.setReference(tx * 0.02, ControlType.kDutyCycle);
       } else {
         faceGoalOdometry();
-        System.out.println("No target");
         // make it always face the goal
       }
     }
 
-    if (turretEncoder.getPosition() > 198 && tx > 20.0) {
+    if (turretEncoder.getPosition() > 205 && tx > 20.0) {
       turnaround1 = true;
       m_turretPIDController.setReference(-115, ControlType.kPosition);
-      System.out.println("turnaround1 true");
+      // System.out.println("turnaround1 true");
 
-    } else if (turretEncoder.getPosition() < -98 && tx < -20.0) {
+    } else if (turretEncoder.getPosition() < -115 && tx < -20.0) {
       turnaround2 = true;
       m_turretPIDController.setReference(185, ControlType.kPosition);
-      System.out.println("turnaround2 true");
+      // System.out.println("turnaround2 true");
     }
 
     if (turnaround1 && turretEncoder.getPosition() < -100) {
       turnaround1 = false;
-      System.out.println("turnaround1 false");
+      // System.out.println("turnaround1 false");
     }
     if (turnaround2 && turretEncoder.getPosition() > 170) {
       turnaround2 = false;
-      System.out.println("turnaround2 false");
+      // System.out.println("turnaround2 false");
     }
 
     if (isStuck()) {
@@ -159,7 +158,7 @@ public class Turret extends SubsystemBase {
   public void faceGoalOdometry() {
     double rot = Math.toDegrees(pose.getRotation().getRadians() 
       - Math.atan2(pose.getY(), pose.getX()));
-    System.out.println("ROT: " + rot);
+    // System.out.println("ROT: " + rot);
     while (rot > limitU) {
       rot -= 360;
     }
@@ -196,6 +195,10 @@ public class Turret extends SubsystemBase {
 
   public void zeroTurret() {
     turretEncoder.setPosition(0);
+  }
+
+  public void aimOnTheMove() {
+    
   }
 
   public void initDefaultCommand() {

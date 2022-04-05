@@ -164,6 +164,10 @@ public class SwerveDrive extends SubsystemBase {
     return m_odometry.getPoseMeters();
   }
 
+  public void getdTheta() {
+    // m_odometry.
+  }
+
   /**
    * Resets the odometry to the specified pose.
    *

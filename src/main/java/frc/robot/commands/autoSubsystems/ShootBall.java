@@ -50,7 +50,7 @@ public class ShootBall extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // shooter.stopShooter();
+    shooter.setShooter(3000);
     conveyor.stopConveyor();
   }
 
