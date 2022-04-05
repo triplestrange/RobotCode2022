@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -148,6 +151,8 @@ public class RobotContainer {
     conveyor.stopConveyor();
     shooter.setShooter(Shooting.idleSpeed);
     climb.extend();
+    // TODO: test this
+    swerve.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.PI / 2)));
   }
 
 }
