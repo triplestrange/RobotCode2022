@@ -124,6 +124,8 @@ public final class Constants {
 
     public static final double height = .864; // of limelight
     public static final double hub = 2.64;
+
+    public static final double idleSpeed = 3250;
   }
 
   public static final class Electrical {

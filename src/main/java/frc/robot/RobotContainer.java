@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.autoSubsystems.*;
 import frc.robot.Constants.JoystickButtons;
+import frc.robot.Constants.Shooting;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -33,7 +34,7 @@ public class RobotContainer {
   public static SwerveDrive swerve;
   private final Turret turret;
   private final Conveyor conveyor;
-  public final Climber climb;
+  private final Climber climb;
   private final Hood hood;
 
   /**
@@ -139,6 +140,14 @@ public class RobotContainer {
     }, intake));
 
     swerve.resetEncoders();
+  }
+
+  public void setupTele() {
+    intake.wheelsIn(0);
+    intake.setIntake(0);
+    conveyor.stopConveyor();
+    shooter.setShooter(Shooting.idleSpeed);
+    climb.extend();
   }
 
 }

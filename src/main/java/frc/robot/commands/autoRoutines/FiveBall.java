@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.*;
@@ -133,7 +134,7 @@ public class FiveBall extends SequentialCommandGroup {
     );
 
     Command fiveBall = new InstantCommand(() -> {
-      shooter.setShooter(3000);
+      shooter.setShooter(Constants.Shooting.idleSpeed);
       intake.setIntake(1);
       intake.wheelsIn(1);
     }, shooter, conveyor, intake)
@@ -166,7 +167,7 @@ public class FiveBall extends SequentialCommandGroup {
           }
         }).withTimeout(1.25))
         .andThen(new InstantCommand(() -> {
-          shooter.setShooter(3000);
+          shooter.setShooter(Constants.Shooting.idleSpeed);
           conveyor.stopConveyor();
           intake.wheelsIn(1);
           intake.setIntake(1);
@@ -185,7 +186,7 @@ public class FiveBall extends SequentialCommandGroup {
         }, shooter, conveyor).withTimeout(2)
             .andThen(new InstantCommand(() -> {
               conveyor.stopConveyor();
-              shooter.setShooter(3000);
+              shooter.setShooter(Constants.Shooting.idleSpeed);
             }, conveyor, shooter)));
 
     // Add your commands in the addCommands() call, e.g.

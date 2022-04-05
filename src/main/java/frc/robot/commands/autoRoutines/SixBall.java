@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.*;
@@ -151,7 +152,7 @@ public class SixBall extends SequentialCommandGroup {
       }
     }, shooter, conveyor).until(emptyBot).withTimeout(1)
     .andThen(new InstantCommand(() -> {
-      shooter.setShooter(3250);
+      shooter.setShooter(Constants.Shooting.idleSpeed);
       conveyor.stopConveyor();
       intake.setIntake(1);
     }, shooter, conveyor, intake))
@@ -170,7 +171,7 @@ public class SixBall extends SequentialCommandGroup {
           swerve.drive(0, 0, 0, true);
         }, shooter, conveyor).until(emptyBot).withTimeout(2))
         .andThen(new InstantCommand(() -> {
-          shooter.setShooter(3250);
+          shooter.setShooter(Constants.Shooting.idleSpeed);
           conveyor.stopConveyor();
           intake.wheelsIn(1);
         }, shooter))
@@ -193,7 +194,7 @@ public class SixBall extends SequentialCommandGroup {
           }
         }).withTimeout(2))
         .andThen(new InstantCommand(() -> {
-          shooter.setShooter(3000);
+          shooter.setShooter(Constants.Shooting.idleSpeed);
           conveyor.stopConveyor();
           intake.wheelsIn(1);
           intake.setIntake(1);
