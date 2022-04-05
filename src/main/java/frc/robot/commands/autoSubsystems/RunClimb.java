@@ -4,21 +4,20 @@
 
 package frc.robot.commands.autoSubsystems;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Conveyor;
 import edu.wpi.first.wpilibj.Joystick;
-import frc.robot.subsystems.Intake;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Climber;
 
-public class ManualFeeder extends CommandBase {
-  private Conveyor conveyor;
-  private Intake intake;
-  private Joystick joystick;
-  /** Creates a new LoadBall. */
-  public ManualFeeder(Intake intake, Conveyor conveyor, Joystick joystick) {
-    addRequirements(intake, conveyor);
-    this.intake = intake;
-    this.conveyor = conveyor;
+public class RunClimb extends CommandBase {
+  private final Climber climb;
+  private final Joystick joystick;
+
+  /** Creates a new RunClimb. */
+  public RunClimb(Climber climb, Joystick joystick) {
+    this.climb = climb;
     this.joystick = joystick;
+    addRequirements(climb);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -30,28 +29,25 @@ public class ManualFeeder extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double speed = 0;
-    if (joystick.getRawAxis(2) > 0.1) {
-      speed = joystick.getRawAxis(2);
-    } else if (joystick.getRawAxis(3) > 0.1) {
-      speed = -joystick.getRawAxis(3);
-    }
-
-    intake.wheelsIn(-speed);
-
-    if (speed < 0) {
-      conveyor.autoConveyor();
+    if (Math.abs(joystick.getRawAxis(5)) > 0.3) {
+      SmartDashboard.putNumber("ClimberSpeedL", joystick.getRawAxis(5));
+      climb.moveLeft();
     } else {
-      conveyor.runConveyor(-speed);
+      climb.stopLeft();
     }
+
+    if (Math.abs(joystick.getRawAxis(1)) > 0.3) {
+      SmartDashboard.putNumber("ClimberSpeedR", joystick.getRawAxis(1));
+      climb.moveRight();
+    } else {
+      climb.stopRight();
+    }
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.setIntake(0);
-    intake.stop();
-    conveyor.stopConveyor();
   }
 
   // Returns true when the command should end.

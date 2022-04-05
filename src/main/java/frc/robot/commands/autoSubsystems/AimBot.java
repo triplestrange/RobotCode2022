@@ -13,6 +13,7 @@ import frc.robot.subsystems.*;
 public class AimBot extends CommandBase {
   private Turret turret;
   private Hood hood;
+
   /** Creates a new TurretAim. */
   public AimBot(Turret turret, Hood hood) {
     this.turret = turret;
@@ -31,36 +32,31 @@ public class AimBot extends CommandBase {
   public void execute() {
     double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
-    // if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0.0) !=0) {
-    //   turret.turretVision();
-    // } else {
-    //   turret.faceGoal();
-    // }
-    //if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0.0) !=0) {
-       turret.turretVision();
-       if (hood.getExtended()) {
-        if (ty > 5) {
-          hood.setHood(0);
-          SmartDashboard.putBoolean("Long Range", false);}
-        else{
-          SmartDashboard.putBoolean("Long Range", true);
-          hood.setHood(1);}
+    turret.turretVision();
+    if (hood.getExtended()) {
+      if (ty > 5) {
+        hood.setHood(0);
+        SmartDashboard.putBoolean("Long Range", false);
       } else {
-        if (ty < -19) {
-          SmartDashboard.putBoolean("Long Range", true);
-          hood.setHood(1);
-        } else {
-          SmartDashboard.putBoolean("Long Range", false);
-          hood.setHood(0);
-        }
+        SmartDashboard.putBoolean("Long Range", true);
+        hood.setHood(1);
       }
-
+    } else {
+      if (ty < -19) {
+        SmartDashboard.putBoolean("Long Range", true);
+        hood.setHood(1);
+      } else {
+        SmartDashboard.putBoolean("Long Range", false);
+        hood.setHood(0);
+      }
+    }
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override

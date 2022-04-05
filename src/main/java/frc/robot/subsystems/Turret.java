@@ -20,11 +20,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Electrical;
+import frc.robot.Constants.JoystickButtons;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.subsystems.swerve.SwerveDrive;
 
 public class Turret extends SubsystemBase {
   private CANSparkMax turretMotor;
@@ -41,8 +44,8 @@ public class Turret extends SubsystemBase {
 
     // Odometry class for tracking robot pose
     double gyroAng = SmartDashboard.getNumber("GYRO ANGLE", 0.0);
-    m_odometry = new SwerveDriveOdometry(SwerveConstants.kDriveKinematics, 
-      Rotation2d.fromDegrees((gyroAng + 180) * (SwerveConstants.kGyroReversed ? 1.0 : -1.0)));
+    m_odometry = new SwerveDriveOdometry(SwerveConstants.kDriveKinematics,
+        Rotation2d.fromDegrees((gyroAng + 180) * (SwerveConstants.kGyroReversed ? 1.0 : -1.0)));
 
     limitU = (float) SmartDashboard.getNumber("TurLimU", 223f);
     limitL = (float) SmartDashboard.getNumber("TurLimL", -137f);
@@ -156,8 +159,8 @@ public class Turret extends SubsystemBase {
   }
 
   public void faceGoalOdometry() {
-    double rot = Math.toDegrees(pose.getRotation().getRadians() 
-      - Math.atan2(pose.getY(), pose.getX()));
+    double rot = Math.toDegrees(pose.getRotation().getRadians()
+        - Math.atan2(pose.getY(), pose.getX()));
     // System.out.println("ROT: " + rot);
     while (rot > limitU) {
       rot -= 360;
@@ -167,7 +170,7 @@ public class Turret extends SubsystemBase {
     }
 
     m_turretPIDController.setReference(
-        rot, 
+        rot,
         ControlType.kPosition);
   }
 
@@ -198,7 +201,7 @@ public class Turret extends SubsystemBase {
   }
 
   public void aimOnTheMove() {
-    
+
   }
 
   public void initDefaultCommand() {
@@ -223,8 +226,12 @@ public class Turret extends SubsystemBase {
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
     }
 
-    pose = RobotContainer.swerve.m_odometryTur.getPoseMeters();
+    if (SmartDashboard.getBoolean("Rumble", false)) {
+      JoystickButtons.m_driverController.setRumble(RumbleType.kLeftRumble, 0.1);
+    }
 
-    
+    pose = RobotContainer.swerve.getPoseTur();
+
+
   }
 }

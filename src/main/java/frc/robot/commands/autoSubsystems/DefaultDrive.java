@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.autoSubsystems;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
@@ -6,11 +6,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.swerve.SwerveDrive;
 
 public class DefaultDrive extends CommandBase {
   private final SwerveDrive m_drive;
   private final Joystick m_joystick;
-  private  double m_xSpeed, m_ySpeed, m_rot;
+  private double m_xSpeed, m_ySpeed, m_rot;
   private final boolean m_fieldRelative;
   private double heading;
   private PIDController pid;
@@ -19,9 +20,11 @@ public class DefaultDrive extends CommandBase {
   /**
    * Creates a new DefaultDrive.
    * 
-   * @param subsystem The drive subsystem this command will run on
-   * @param driver The joystick to be used for calculations in speed and rotation
-   * @param multiplier The mode of the robot -- multiplied with  x, y, and rot speed
+   * @param subsystem  The drive subsystem this command will run on
+   * @param driver     The joystick to be used for calculations in speed and
+   *                   rotation
+   * @param multiplier The mode of the robot -- multiplied with x, y, and rot
+   *                   speed
    */
   public DefaultDrive(SwerveDrive subsystem, Joystick driver, double multiplier) {
     addRequirements(subsystem);
@@ -34,8 +37,6 @@ public class DefaultDrive extends CommandBase {
     m_rot = 0;
     m_fieldRelative = true;
     this.multiplier = multiplier;
-
-    
 
   }
 
@@ -71,10 +72,9 @@ public class DefaultDrive extends CommandBase {
 
     double curHead = m_drive.getAngle().getDegrees();
 
-
     if (m_rot == 0) {
       m_drive.drive(m_xSpeed, m_ySpeed, pid.calculate(curHead, heading), m_fieldRelative);
-      
+
     } else {
       m_drive.drive(m_xSpeed, m_ySpeed, m_rot, m_fieldRelative);
       heading = m_drive.getAngle().getDegrees();
@@ -82,7 +82,7 @@ public class DefaultDrive extends CommandBase {
 
     // x for zero heading
     if (m_joystick.getRawButtonPressed(3)) {
-        m_drive.zeroHeading();
+      m_drive.zeroHeading();
     }
 
   }
@@ -92,6 +92,5 @@ public class DefaultDrive extends CommandBase {
   public boolean isFinished() {
     return false;
   }
-
 
 }

@@ -30,21 +30,21 @@ public class Climber extends SubsystemBase {
   private boolean extended;
 
   /** Creates a new Climber. */
-  public Climber() {  
+  public Climber() {
 
     motor2 = new CANSparkMax(Electrical.climbR, MotorType.kBrushless);
     motor1 = new CANSparkMax(Electrical.climbL, MotorType.kBrushless);
     motor1.restoreFactoryDefaults();
     motor2.restoreFactoryDefaults();
-    motor1.enableSoftLimit(SoftLimitDirection.kForward , false);
+    motor1.enableSoftLimit(SoftLimitDirection.kForward, false);
     // motor1.setSoftLimit(SoftLimitDirection.kForward, 9.93f);
     motor1.enableSoftLimit(SoftLimitDirection.kReverse, false);
     // motor1.setSoftLimit(SoftLimitDirection.kReverse, 9.93f);
-    motor2.enableSoftLimit(SoftLimitDirection.kForward , false);
+    motor2.enableSoftLimit(SoftLimitDirection.kForward, false);
     // motor2.setSoftLimit(SoftLimitDirection.kForward, -5.80f);
     motor2.enableSoftLimit(SoftLimitDirection.kReverse, false);
     // motor2.setSoftLimit(SoftLimitDirection.kReverse, -5.80f);
-    solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 9); 
+    solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 9);
     solenoid.set(Value.kReverse);
     extended = solenoid.get() == Value.kForward;
 
@@ -71,9 +71,9 @@ public class Climber extends SubsystemBase {
 
   public void toggle() {
     // if (solenoid.get() == Value.kReverse) {
-    //   solenoid.set(Value.kForward);
+    // solenoid.set(Value.kForward);
     // } else {
-    //   solenoid.set(Value.kReverse);
+    // solenoid.set(Value.kReverse);
     // }
     solenoid.toggle();
   }
@@ -104,9 +104,9 @@ public class Climber extends SubsystemBase {
   }
 
   public void initDefaultCommand() {
-    
+
   }
-   
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

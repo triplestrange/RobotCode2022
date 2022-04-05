@@ -25,7 +25,7 @@ public class Conveyor extends SubsystemBase {
   private DigitalInput sensor2;
 
   public Conveyor() {
-    motor1 =  new CANSparkMax(Electrical.conveyor1, MotorType.kBrushless);
+    motor1 = new CANSparkMax(Electrical.conveyor1, MotorType.kBrushless);
     encoder1 = motor1.getEncoder();
 
     motor2 = new CANSparkMax(Electrical.conveyor2, MotorType.kBrushless);
@@ -52,9 +52,9 @@ public class Conveyor extends SubsystemBase {
   }
 
   public void autoConveyor() {
-    //top is sensor 1
-    //bottom is sensor 2
-    //! means it has a value
+    // top is sensor 1
+    // bottom is sensor 2
+    // ! means it has a value
     if (sensor1.get() && !sensor2.get()) {
       runConveyor(-1);
     }
@@ -98,7 +98,7 @@ public class Conveyor extends SubsystemBase {
   }
 
   public void initDefaultCommand() {
-    
+
   }
 
   @Override

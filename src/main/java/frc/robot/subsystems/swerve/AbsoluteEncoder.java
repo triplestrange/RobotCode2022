@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 
@@ -7,7 +7,7 @@ public class AbsoluteEncoder extends AnalogInput {
     private boolean reversed = false;
 
     /**
-     * @param channel analog channel of the encoder
+     * @param channel     analog channel of the encoder
      * @param angleOffset offset acquired by the getCalibration method
      */
     public AbsoluteEncoder(int channel, double angleOffset) {
@@ -15,10 +15,10 @@ public class AbsoluteEncoder extends AnalogInput {
     }
 
     /**
-     * @param channel analog channel of the encoder
+     * @param channel     analog channel of the encoder
      * @param angleOffset offset acquired by the getCalibration method
-     * @param reversed boolean indicating the encoder's angle needs to be
-     *        reversed
+     * @param reversed    boolean indicating the encoder's angle needs to be
+     *                    reversed
      */
     public AbsoluteEncoder(int channel, double angleOffset, boolean reversed) {
         super(channel);
@@ -33,7 +33,8 @@ public class AbsoluteEncoder extends AnalogInput {
      */
     public double getAngle() {
         double angle = (getVoltage() - 0.2) * (2 * Math.PI) / 4.6;
-        if (reversed) angle *= -1;
+        if (reversed)
+            angle *= -1;
         return normalizeAngle(angle - angleOffset);
     }
 
@@ -45,7 +46,8 @@ public class AbsoluteEncoder extends AnalogInput {
      */
     private double normalizeAngle(double angle) {
         angle %= (2 * Math.PI);
-        if (angle < 0) angle += 2 * Math.PI;
+        if (angle < 0)
+            angle += 2 * Math.PI;
         return angle;
     }
 

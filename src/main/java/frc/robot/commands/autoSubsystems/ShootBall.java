@@ -16,10 +16,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ShootBall extends CommandBase {
   private Shooter shooter;
   private Conveyor conveyor;
+
   /** Creates a new ShootBall. */
   public ShootBall(Shooter shooter, Conveyor conveyor) {
     addRequirements(shooter, conveyor);
-    this.shooter = shooter; 
+    this.shooter = shooter;
     this.conveyor = conveyor;
   }
 
@@ -41,9 +42,9 @@ public class ShootBall extends CommandBase {
     }
 
     if (!extended) {
-        shooter.visionShootShort();
+      shooter.visionShootShort();
     } else {
-        shooter.visionShootLong();
+      shooter.visionShootLong();
     }
   }
 

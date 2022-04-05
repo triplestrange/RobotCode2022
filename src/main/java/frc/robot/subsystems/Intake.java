@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Electrical;
 
@@ -25,13 +26,13 @@ public class Intake extends SubsystemBase {
   private boolean extended = false;
   private NetworkTable table;
   private double speedI;
-  
+
   public Intake() {
-    super();    
+    super();
     intakeMotor = new CANSparkMax(Electrical.intake, MotorType.kBrushless);
     intakeMotor.setSmartCurrentLimit(30);
     intakeEncoder = intakeMotor.getEncoder();
-    solenoid1 = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5, 10); 
+    solenoid1 = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5, 10);
 
     // intakeMotor.restoreFactoryDefaults();
     intakeMotor.setIdleMode(IdleMode.kBrake);
@@ -49,14 +50,13 @@ public class Intake extends SubsystemBase {
   }
 
   public void setIntake(int pos) {
-      if(pos==0){ //retract
-        solenoid1.set(Value.kReverse);
-        setExtended(false);
-      }
-      else { //extend
-        solenoid1.set(Value.kForward);
-        setExtended(true);
-      }
+    if (pos == 0) { // retract
+      solenoid1.set(Value.kReverse);
+      setExtended(false);
+    } else { // extend
+      solenoid1.set(Value.kForward);
+      setExtended(true);
+    }
   }
 
   public void toggleIntake() {
@@ -67,6 +67,21 @@ public class Intake extends SubsystemBase {
       solenoid1.set(Value.kForward);
       setExtended(true);
     }
+  }
+
+  public void intake() {
+    wheelsIn(1);
+    setIntake(1);
+  }
+
+  public void outtake() {
+    wheelsIn(1);
+    setIntake(-1);
+  }
+
+  public void retract() {
+    wheelsIn(0);
+    setIntake(0);
   }
 
   public void wheelsIn() {
@@ -80,7 +95,7 @@ public class Intake extends SubsystemBase {
   public void wheelsOut() {
     intakeMotor.set(-speedI);
   }
-  
+
   public void stop() {
     intakeMotor.set(0);
   }
@@ -94,7 +109,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void initDefaultCommand() {
-    
+
   }
 
   @Override
