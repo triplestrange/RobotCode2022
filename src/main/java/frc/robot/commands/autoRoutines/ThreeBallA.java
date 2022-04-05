@@ -134,10 +134,13 @@ public class ThreeBallA extends SequentialCommandGroup {
 
     );
 
+    // shoot first
     Command threeBallA = new RunCommand(() -> {
       shooter.visionShootLong();
       if (shooter.atSpeed()) {
         conveyor.runConveyor();
+      } else {
+        conveyor.autoConveyor();
       }
     }, shooter, conveyor).withName("SHOOT").withTimeout(2)
         .andThen(new InstantCommand(() -> {
@@ -162,6 +165,8 @@ public class ThreeBallA extends SequentialCommandGroup {
           shooter.visionShootLong();
           if (shooter.atSpeed()) {
             conveyor.runConveyor();
+          } else {
+            conveyor.autoConveyor();
           }
         }).withTimeout(3))
         .andThen(new InstantCommand(() -> {

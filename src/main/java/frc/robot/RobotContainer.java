@@ -8,10 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.autoRoutines.FiveBall;
-import frc.robot.commands.autoRoutines.ThreeBallA;
-import frc.robot.commands.autoRoutines.ThreeBallB;
-import frc.robot.commands.autoRoutines.TwoBall;
+import frc.robot.commands.autoRoutines.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -67,6 +64,7 @@ public class RobotContainer {
     choose.addOption("ThreeBall - shoot first", new ThreeBallA(swerve, intake, conveyor, hood, turret, shooter));
     choose.addOption("ThreeBall - regular", new ThreeBallB(swerve, intake, conveyor, hood, turret, shooter));
     choose.addOption("FiveBall - regular", new FiveBall(swerve, intake, conveyor, hood, turret, shooter));
+    choose.addOption("Surprise", new SixBall(swerve, intake, conveyor, hood, turret, shooter));
     SmartDashboard.putBoolean("Blind me", true);
 
   }
