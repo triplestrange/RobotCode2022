@@ -71,7 +71,7 @@ public class SixBall extends SequentialCommandGroup {
 
         ),
             // direction robot moves
-            new Pose2d(0.2, -3.2, new Rotation2d(-Math.PI / 2)), config);
+            new Pose2d(-0.5, -3.2, new Rotation2d(-Math.PI / 2)), config);
 
     SwerveControllerCommand ball1ToBall2Command = new SwerveControllerCommand(ball1ToBall2,
         swerve::getPose, // Functional interface to feed supplier
@@ -91,7 +91,7 @@ public class SixBall extends SequentialCommandGroup {
     );
 
     Trajectory ball2ToHumanPlayer = TrajectoryGenerator
-        .generateTrajectory(new Pose2d(0.2, -3.2, new Rotation2d(-Math.PI / 2)), List.of(
+        .generateTrajectory(new Pose2d(-0.5, -3.2, new Rotation2d(-Math.PI / 2)), List.of(
 
         ),
             // direction robot moves
@@ -114,11 +114,11 @@ public class SixBall extends SequentialCommandGroup {
     );
 
     Trajectory humanPlayerToBall3 = TrajectoryGenerator
-        .generateTrajectory(new Pose2d(0.6, -7.2, new Rotation2d(-Math.PI / 2)), List.of(
+        .generateTrajectory(new Pose2d(-0.6, -7.2, new Rotation2d(Math.PI / 2)), List.of(
 
         ),
             // direction robot moves
-            new Pose2d(0.3, -4, new Rotation2d(Math.PI / 4.0)), config);
+            new Pose2d(-4, 0, new Rotation2d(Math.PI / 2.0)), config);
     SwerveControllerCommand humanPlayerToBall3Command = new SwerveControllerCommand(humanPlayerToBall3,
         swerve::getPose, // Functional interface to feed supplier
         SwerveConstants.kDriveKinematics,
@@ -127,7 +127,7 @@ public class SixBall extends SequentialCommandGroup {
         new PIDController(AutoConstants.kPXController, 1, AutoConstants.kDXController),
         new PIDController(AutoConstants.kPYController, 1, AutoConstants.kDYController), theta,
         () -> {
-          return new Rotation2d(0);
+          return new Rotation2d(Math.PI / 2.0);
         },
 
         swerve::setModuleStates,
@@ -145,20 +145,12 @@ public class SixBall extends SequentialCommandGroup {
 
     // shoot ball 1, intake ball 2 and 3
     // shoot 2 + 3
-    Command sixBall = new RunCommand(() -> {
-      shooter.visionShootShort();
-      if (shooter.atSpeed()) {
-        conveyor.runConveyor();
-      }
-    }, shooter, conveyor).until(emptyBot).withTimeout(1)
-    .andThen(new InstantCommand(() -> {
+    Command sixBall = new InstantCommand(() -> {
       shooter.setShooter(Constants.Shooting.idleSpeed);
-      conveyor.stopConveyor();
       intake.setIntake(1);
-    }, shooter, conveyor, intake))
+      intake.wheelsIn(1);
+    }, shooter, conveyor, intake)
         .andThen(toBall1Command.raceWith(
-            new RunCommand(conveyor::autoConveyor, conveyor)))
-        .andThen(ball1ToBall2Command.raceWith(
             new RunCommand(conveyor::autoConveyor, conveyor)))
         .andThen(new RunCommand(() -> {
           hood.setHood(1);
@@ -169,22 +161,15 @@ public class SixBall extends SequentialCommandGroup {
             conveyor.autoConveyor();
           }
           swerve.drive(0, 0, 0, true);
-        }, shooter, conveyor).until(emptyBot).withTimeout(2))
-        .andThen(new InstantCommand(() -> {
-          shooter.setShooter(Constants.Shooting.idleSpeed);
-          conveyor.stopConveyor();
-          intake.wheelsIn(1);
-        }, shooter))
-        .andThen(ball2ToHumanPlayerCommand.raceWith(
+        }, shooter, conveyor).withName("SHOOT").withTimeout(2))
+        .andThen(ball1ToBall2Command.raceWith(
             new RunCommand(conveyor::autoConveyor, conveyor)))
         .andThen(new InstantCommand(() -> {
           swerve.drive(0, 0, 0, true);
           conveyor.stopConveyor();
-          intake.setIntake(1);
-          intake.wheelsIn(1);
+          intake.setIntake(0);
+          intake.wheelsIn(0);
         }))
-        .andThen(humanPlayerToBall3Command.raceWith(
-            new RunCommand(conveyor::autoConveyor, conveyor)))
         .andThen(new RunCommand(() -> {
           shooter.visionShootLong();
           if (shooter.atSpeed()) {
@@ -192,13 +177,14 @@ public class SixBall extends SequentialCommandGroup {
           } else {
             conveyor.autoConveyor();
           }
-        }).withTimeout(2))
+        }).withTimeout(1.25))
         .andThen(new InstantCommand(() -> {
           shooter.setShooter(Constants.Shooting.idleSpeed);
           conveyor.stopConveyor();
           intake.wheelsIn(1);
           intake.setIntake(1);
-        }, shooter, conveyor));
+        }, shooter, conveyor))
+        .andThen(ball2ToHumanPlayerCommand.raceWith(new RunCommand(conveyor::autoConveyor, conveyor)));
 
     addCommands(sixBall);
   }

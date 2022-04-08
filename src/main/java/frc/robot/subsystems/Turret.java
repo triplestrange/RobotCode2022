@@ -71,10 +71,10 @@ public class Turret extends SubsystemBase {
     kP = 0.35;
     kFF = 1. / 11000.;
     kI = 0;
-    kD = 0;
+    kD = 0.0005;
     kIz = 0;
-    kMaxOutput = .9;
-    kMinOutput = -0.9;
+    kMaxOutput = 1;
+    kMinOutput = -1;
 
     // // set PID coefficients
     m_turretPIDController.setP(kP);
@@ -93,21 +93,26 @@ public class Turret extends SubsystemBase {
 
   public void turretVision() {
     double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
+    double dTheta = SmartDashboard.getNumber("TurnRate", 0.0);
+
     if (!turnaround1 && !turnaround2) {
       if (tx != 0) {
-        m_turretPIDController.setReference(tx * 0.02, ControlType.kDutyCycle);
+        // for non-moving
+        m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
+        // for moving
+        // m_turretPIDController.setReference(tx * 0.02 - dTheta, ControlType.kDutyCycle);
       } else {
         faceGoalOdometry();
         // make it always face the goal
       }
     }
 
-    if (turretEncoder.getPosition() > 205 && tx > 20.0) {
+    if (turretEncoder.getPosition() > 205 && tx > 12.0) {
       turnaround1 = true;
       m_turretPIDController.setReference(-115, ControlType.kPosition);
       // System.out.println("turnaround1 true");
 
-    } else if (turretEncoder.getPosition() < -115 && tx < -20.0) {
+    } else if (turretEncoder.getPosition() < -115 && tx < -12.0) {
       turnaround2 = true;
       m_turretPIDController.setReference(185, ControlType.kPosition);
       // System.out.println("turnaround2 true");
@@ -200,10 +205,6 @@ public class Turret extends SubsystemBase {
     turretEncoder.setPosition(0);
   }
 
-  public void aimOnTheMove() {
-
-  }
-
   public void initDefaultCommand() {
 
   }
@@ -226,12 +227,12 @@ public class Turret extends SubsystemBase {
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
     }
 
-    if (SmartDashboard.getBoolean("Rumble", false)) {
-      JoystickButtons.m_driverController.setRumble(RumbleType.kLeftRumble, 0.1);
-    }
+    // if (SmartDashboard.getBoolean("Rumble", false)) {
+    //   JoystickButtons.m_driverController.setRumble(RumbleType.kLeftRumble, 0.1);
+    // }
 
     pose = RobotContainer.swerve.getPoseTur();
-
+    SmartDashboard.putNumber("TurretVelocity", turretEncoder.getVelocity());
 
   }
 }

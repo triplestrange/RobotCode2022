@@ -8,6 +8,8 @@ import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -28,6 +30,7 @@ public class Climber extends SubsystemBase {
   private NetworkTable table;
   private double speedL, speedR;
   private boolean extended;
+  private SparkMaxPIDController m_pidController1, m_pidController2;
 
   /** Creates a new Climber. */
   public Climber() {
@@ -61,6 +64,16 @@ public class Climber extends SubsystemBase {
 
     periodic();
 
+    m_pidController1 = motor1.getPIDController();
+    m_pidController2 = motor2.getPIDController();
+
+    m_pidController1.setP(1);
+    m_pidController1.setI(0);
+    m_pidController1.setD(1);
+    m_pidController2.setP(1);
+    m_pidController2.setI(0);
+    m_pidController2.setD(1);
+
     // LiveWindow
     addChild("Right", solenoid);
   }
@@ -70,24 +83,34 @@ public class Climber extends SubsystemBase {
   }
 
   public void toggle() {
-    // if (solenoid.get() == Value.kReverse) {
-    // solenoid.set(Value.kForward);
-    // } else {
-    // solenoid.set(Value.kReverse);
-    // }
     solenoid.toggle();
   }
 
   public void extend() {
-    solenoid.set(Value.kReverse);
+    solenoid.set(Value.kForward);
   }
 
   public void retract() {
-    solenoid.set(Value.kForward);
+    solenoid.set(Value.kReverse);
   }
 
   public void moveLeft() {
     motor2.set(speedL);
+  }
+
+  public void setRight(double setpoint) {
+    m_pidController1.setReference(setpoint, ControlType.kPosition);
+  }
+
+  public void setLeft(double setpoint) {
+    m_pidController2.setReference(setpoint, ControlType.kPosition);
+  }
+
+  public void moveLeft(double speed) {
+    motor2.set(speed);
+  }
+  public void moveRight(double speed) {
+    motor1.set(speed);
   }
 
   public void stop() {

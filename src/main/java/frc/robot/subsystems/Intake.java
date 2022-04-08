@@ -75,8 +75,8 @@ public class Intake extends SubsystemBase {
   }
 
   public void outtake() {
-    wheelsIn(1);
-    setIntake(-1);
+    wheelsIn(-1);
+    setIntake(1);
   }
 
   public void retract() {

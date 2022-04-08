@@ -51,6 +51,9 @@ public class AimBot extends CommandBase {
       }
     }
 
+    // deg per sec
+    double turnRate = SmartDashboard.getNumber("TurnRate", 0.0);
+
   }
 
   // Called once the command ends or is interrupted.

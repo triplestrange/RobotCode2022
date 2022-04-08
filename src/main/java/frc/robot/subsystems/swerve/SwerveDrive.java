@@ -123,6 +123,7 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("y", getPose().getTranslation().getY());
     SmartDashboard.putNumber("r", getPose().getRotation().getDegrees());
     SmartDashboard.putNumber("GYRO ANGLE", navX.getAngle());
+    SmartDashboard.putNumber("TurnRate", getTurnRate());
     m_odometryTur.update(getAngle(),
         m_frontLeft.getState(),
         m_rearLeft.getState(),
@@ -158,10 +159,6 @@ public class SwerveDrive extends SubsystemBase {
 
   public Pose2d getPoseTur() {
     return m_odometryTur.getPoseMeters();
-  }
-
-  public void getdTheta() {
-    // m_odometry.
   }
 
   /**

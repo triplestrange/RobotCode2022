@@ -110,37 +110,48 @@ public class RobotContainer {
     JoystickButtons.oplWing.whenPressed(new InstantCommand(
         () -> hood.toggleHood()));
 
-    // run shooter at preset speeds
-    JoystickButtons.opA.whileHeld(new InstantCommand(
-        () -> shooter.setShooter(1500), shooter));
-    JoystickButtons.opA.whenReleased(new InstantCommand(shooter::stopShooter, shooter));
-    JoystickButtons.opY.whileHeld(new InstantCommand(
-        () -> shooter.setShooter(4550), shooter));
-    JoystickButtons.opY.whenReleased(new InstantCommand(shooter::stopShooter, shooter));
-    JoystickButtons.opB.whileHeld(new InstantCommand(
-        () -> shooter.setShooter(3000), shooter));
-    JoystickButtons.opB.whenReleased(new InstantCommand(shooter::stopShooter, shooter));
+    JoystickButtons.opA.whenPressed(new AutoClimb(swerve, climb, 0));
 
     // toggle climb
-    JoystickButtons.dlBump.whenPressed(new InstantCommand(climb::moveLeft, climb));
-    JoystickButtons.dlBump.whenReleased(new InstantCommand(climb::stopLeft, climb));
-    JoystickButtons.drBump.whenPressed(new InstantCommand(climb::moveRight, climb));
-    JoystickButtons.drBump.whenReleased(new InstantCommand(climb::stopRight, climb));
-    JoystickButtons.opX.whenPressed(new InstantCommand(climb::toggle, climb));
+    JoystickButtons.oprBump.whenPressed(new InstantCommand(climb::toggle, climb));
   }
 
   public void configDefaults() {
     swerve.setDefaultCommand(new DefaultDrive(swerve, JoystickButtons.m_driverController, 1));
     turret.setDefaultCommand(new AimBot(turret, hood));
     intake.setDefaultCommand(new RunCommand(() -> {
-      if (JoystickButtons.m_operatorController.getRawAxis(1) > 0.05) {
+      if (JoystickButtons.m_operatorController.getRawAxis(3) > 0.05) {
         intake.intake();
-      } else if (JoystickButtons.m_operatorController.getRawAxis(5) > 0.05) {
+      } else if (JoystickButtons.m_operatorController.getRawAxis(2) > 0.05) {
         intake.outtake();
       } else {
         intake.retract();
       }
     }, intake));
+    conveyor.setDefaultCommand(new RunCommand(() -> {
+      if (JoystickButtons.m_operatorController.getRawAxis(3) > 0.05) {
+        conveyor.autoConveyor();
+      } else if (JoystickButtons.m_operatorController.getRawAxis(2) > 0.05) {
+        conveyor.runConveyor(0.75);
+      } else {
+        conveyor.stopConveyor();
+      }
+    }, conveyor));
+    climb.setDefaultCommand(new RunCommand(() -> {
+      if (Math.abs(JoystickButtons.m_operatorController.getRawAxis(5)) > 0.3) {
+        SmartDashboard.putNumber("ClimberSpeedL", JoystickButtons.m_operatorController.getRawAxis(5));
+        climb.moveLeft();
+      } else {
+        climb.stopLeft();
+      }
+  
+      if (Math.abs(JoystickButtons.m_operatorController.getRawAxis(1)) > 0.3) {
+        SmartDashboard.putNumber("ClimberSpeedR", JoystickButtons.m_operatorController.getRawAxis(1));
+        climb.moveRight();
+       } else {
+         climb.stopRight();
+       }
+    }, climb));
 
     swerve.resetEncoders();
   }
@@ -152,7 +163,7 @@ public class RobotContainer {
     shooter.setShooter(Shooting.idleSpeed);
     climb.extend();
     // TODO: test this
-    swerve.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.PI / 2)));
+    swerve.resetOdometry(new Pose2d(0, 0, new Rotation2d(-Math.PI / 2)));
   }
 
 }

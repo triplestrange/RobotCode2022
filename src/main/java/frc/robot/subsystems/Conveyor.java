@@ -71,6 +71,7 @@ public class Conveyor extends SubsystemBase {
   }
 
   public void runConveyor() {
+    System.out.println("GOT HERE");
     motor1.set(-0.65);
     motor2.set(1);
   }

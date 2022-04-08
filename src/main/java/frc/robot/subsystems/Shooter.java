@@ -96,7 +96,7 @@ public class Shooter extends SubsystemBase {
    *         whether shooter speed is at the setpoint
    */
   public boolean atSpeed() {
-    if (m_encoder.getVelocity() > 3000.0) {
+    if (m_encoder.getVelocity() > 3200.0) {
       return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.015;
     }
     return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.04;
