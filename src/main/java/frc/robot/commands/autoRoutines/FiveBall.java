@@ -92,7 +92,7 @@ public class FiveBall extends SequentialCommandGroup {
 
         ),
             // direction robot moves
-            new Pose2d(0.1, -6.3, new Rotation2d(-Math.PI / 4.0)), config);
+            new Pose2d(0.3, -6.45, new Rotation2d(-Math.PI / 4.0)), config);
     SwerveControllerCommand ball2ToHumanPlayerCommand = new SwerveControllerCommand(ball2ToHumanPlayer,
         swerve::getPose, // Functional interface to feed supplier
         SwerveConstants.kDriveKinematics,
@@ -111,7 +111,7 @@ public class FiveBall extends SequentialCommandGroup {
     );
 
     Trajectory humanPlayerBack = TrajectoryGenerator
-        .generateTrajectory(new Pose2d(0.1, -6.3, new Rotation2d(-Math.PI / 2)), List.of(
+        .generateTrajectory(new Pose2d(0.3, -6.45, new Rotation2d(-Math.PI / 2)), List.of(
 
         ),
             // direction robot moves

@@ -5,6 +5,7 @@
 package frc.robot.commands.autoSubsystems;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Shooter;
@@ -34,11 +35,11 @@ public class ShootBall extends CommandBase {
   @Override
   public void execute() {
     boolean extended = SmartDashboard.getBoolean("HoodExtended", false);
-    if (shooter.atSpeed()) {
+    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0);
+    if (shooter.atSpeed() && ty != 0) {
       conveyor.runConveyor();
     } else {
-      if (SmartDashboard.getNumber("ShooterSetpoint", 100) > 3050)
-        conveyor.autoConveyor();
+      conveyor.autoConveyor();
     }
 
     if (!extended) {
@@ -51,7 +52,7 @@ public class ShootBall extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setShooter(3000);
+    shooter.setShooter(Constants.Shooting.idleSpeed);
     conveyor.stopConveyor();
   }
 

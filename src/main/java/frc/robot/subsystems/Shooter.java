@@ -99,7 +99,7 @@ public class Shooter extends SubsystemBase {
     if (m_encoder.getVelocity() > 3200.0) {
       return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.015;
     }
-    return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.04;
+    return (Math.abs(setpoint - m_encoder.getVelocity())) / (setpoint) < 0.02;
 
   }
 
@@ -139,7 +139,6 @@ public class Shooter extends SubsystemBase {
           * (speed[yVals.length - 1] - speed[yVals.length - 2]) + speed[yVals.length - 2];
 
     }
-
     SmartDashboard.putNumber("ShooterSetpoint", val);
     setpoint = val;
     m_pidController.setReference(val, ControlType.kVelocity);

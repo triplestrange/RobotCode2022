@@ -115,17 +115,21 @@ public final class Constants {
 
   public static final class Shooting {
     public static final Double yValsShort[] = { -22.12, -17.12, -13.18, -11.840997, -6.470101, 0.8 };
-    public static final Double speedShort[] = { 3850.0, 3600.0, 3200.0, 3050.0, 3050.0, 2800.0 };
+    public static final Double speedShort[] = { 3800.0, 3570.0, 3225.0, 3050.0, 2900.0, 2800.0 };
     public static final double angShort = 77; // deg
 
+    //working before states
     public static final Double yValsLong[] = { -19.01, -16.19, -10.65, -3.80 };
-    public static final Double speedLong[] = { 3900.0, 3550.0, 3250.0, 3000.0 };
+    public static final Double speedLong[] = { 3915.0, 3550.0, 3200.0, 3000.0 };
+    // TODO: try increasing longest speed
+    // public static final Double yValsLong[] = { -19.01, -16.19, -10.65 , -3.80 };
+    // public static final Double speedLong[] = { 3900.0, 3550.0, 3200.0, 2850.0 };
     public static final double angLong = 65; // deg
 
     public static final double height = .864; // of limelight
     public static final double hub = 2.64;
 
-    public static final double idleSpeed = 3250;
+    public static final double idleSpeed = 2800;
   }
 
   public static final class Electrical {

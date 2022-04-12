@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -39,6 +40,8 @@ public class Climber extends SubsystemBase {
     motor1 = new CANSparkMax(Electrical.climbL, MotorType.kBrushless);
     motor1.restoreFactoryDefaults();
     motor2.restoreFactoryDefaults();
+    motor1.setIdleMode(IdleMode.kBrake);
+    motor2.setIdleMode(IdleMode.kBrake);
     motor1.enableSoftLimit(SoftLimitDirection.kForward, false);
     // motor1.setSoftLimit(SoftLimitDirection.kForward, 9.93f);
     motor1.enableSoftLimit(SoftLimitDirection.kReverse, false);
@@ -51,8 +54,8 @@ public class Climber extends SubsystemBase {
     solenoid.set(Value.kReverse);
     extended = solenoid.get() == Value.kForward;
 
-    motor1.setSmartCurrentLimit(60);
-    motor2.setSmartCurrentLimit(60);
+    // motor1.setSmartCurrentLimit(60);
+    // motor2.setSmartCurrentLimit(60);
 
     motor1.burnFlash();
     motor2.burnFlash();
