@@ -121,9 +121,6 @@ public final class Constants {
     //working before states
     public static final Double yValsLong[] = { -19.01, -16.19, -10.65, -3.80 };
     public static final Double speedLong[] = { 3915.0, 3550.0, 3200.0, 3000.0 };
-    // TODO: try increasing longest speed
-    // public static final Double yValsLong[] = { -19.01, -16.19, -10.65 , -3.80 };
-    // public static final Double speedLong[] = { 3900.0, 3550.0, 3200.0, 2850.0 };
     public static final double angLong = 65; // deg
 
     public static final double height = .864; // of limelight

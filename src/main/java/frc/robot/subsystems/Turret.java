@@ -17,12 +17,15 @@ import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.Electrical;
 import frc.robot.Constants.JoystickButtons;
@@ -177,6 +180,46 @@ public class Turret extends SubsystemBase {
     m_turretPIDController.setReference(
         rot,
         ControlType.kPosition);
+  }
+
+  // need to know:
+  // - where robot is
+  //   - know where goal is in relation
+  // - current speed
+  public void shootMove() {
+    ChassisSpeeds currentMovement = RobotContainer.swerve.currentMovement;  
+    /** wrong cuz it's position not velocity
+    Pose2d cur = RobotContainer.swerve.getPose();
+    // goal is at  (-1, 0, 0)
+    Pose2d goal = new Pose2d(-1, 0, new Rotation2d(0));
+    Twist2d twist2d = new Twist2d(cur.getX() - goal.getX(), 
+                                  cur.getY() - goal.getY(), 
+                                  cur.getRotation().minus(goal.getRotation()).getRadians());
+    Twist2d velTwist2d = new Twist2d(currentMovement.vxMetersPerSecond, 
+                                     currentMovement.vyMetersPerSecond, 
+                                     currentMovement.omegaRadiansPerSecond);
+    // rn it is x,y cartesian style
+    // figure out how to map this so that y is pointing toward target
+    // and x is along circle
+    // x = rcos0, y =  rsin0, x^2 + y^2 = r^2
+    double r = Math.hypot(twist2d.dx, twist2d.dy);
+    double dr = Math.hypot(velTwist2d.dx, velTwist2d.dy);
+    double theta = Math.acos(twist2d.dx/r);
+    double dTheta = Math.acos(velTwist2d.dx/r);
+    // currently doesn't account for turning
+    m_turretPIDController.setReference(-dTheta, ControlType.kDutyCycle);
+    **/
+    double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0.0);
+    double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0);
+
+    double speed = Math.hypot(currentMovement.vxMetersPerSecond, currentMovement.vyMetersPerSecond);
+    double goalRelativeSpeed = speed * Math.cos(Math.atan2(currentMovement.vyMetersPerSecond,
+                                                           currentMovement.vxMetersPerSecond)
+                                - Math.toRadians(turretEncoder.getPosition() - tx - 90));
+    // m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
+
+    m_turretPIDController.setReference(tx * 0.04 - goalRelativeSpeed * 0.1, ControlType.kDutyCycle);
+    SmartDashboard.putNumber("goalRelSpeed", goalRelativeSpeed);
   }
 
   public void setVelocity() {

@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.autoRoutines.*;
 import frc.robot.subsystems.*;
@@ -39,6 +40,7 @@ public class RobotContainer {
   private final Conveyor conveyor;
   private final Climber climb;
   private final Hood hood;
+  private final SendableChooser<Command> choose;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -52,12 +54,16 @@ public class RobotContainer {
     climb = new Climber();
     hood = new Hood();
 
+    this.choose = choose;
+
     SmartDashboard.putData(intake);
     SmartDashboard.putData(shooter);
     SmartDashboard.putData(swerve);
     SmartDashboard.putData(conveyor);
     SmartDashboard.putData(turret);
     SmartDashboard.putData(climb);
+
+    SmartDashboard.putBoolean("Starts on right?", true);
 
     // Configure the button bindings
     configButtons();
@@ -110,10 +116,12 @@ public class RobotContainer {
     JoystickButtons.oplWing.whenPressed(new InstantCommand(
         () -> hood.toggleHood()));
 
-    JoystickButtons.opA.whenPressed(new AutoClimb(swerve, climb, 0));
+    // JoystickButtons.opA.whenPressed(new AutoClimb(swerve, climb, 0));
 
     // toggle climb
     JoystickButtons.oprBump.whenPressed(new InstantCommand(climb::toggle, climb));
+
+    SmartDashboard.putBoolean("Shooting", JoystickButtons.drBump.getAsBoolean());
   }
 
   public void configDefaults() {
@@ -129,8 +137,17 @@ public class RobotContainer {
       }
     }, intake));
     conveyor.setDefaultCommand(new RunCommand(() -> {
+      // intaking
       if (JoystickButtons.m_operatorController.getRawAxis(3) > 0.05) {
         conveyor.autoConveyor();
+        if (SmartDashboard.getBoolean("Shooting", false)) {
+          if (shooter.atSpeed() && NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0) != 0) {
+            conveyor.runConveyor();
+          } else {
+            conveyor.autoConveyor();
+          }
+        }
+      // outtaking
       } else if (JoystickButtons.m_operatorController.getRawAxis(2) > 0.05) {
         conveyor.runConveyor(0.75);
       } else {
@@ -162,8 +179,14 @@ public class RobotContainer {
     conveyor.stopConveyor();
     shooter.setShooter(Shooting.idleSpeed);
     climb.extend();
-    // TODO: test this
-    swerve.resetOdometry(new Pose2d(0, 0, new Rotation2d(-Math.PI / 2)));
+
+    // TODO: Comment out before comp
+    // resets gyro according to starting position
+    // if (SmartDashboard.getBoolean("Starts on right?", true)) {
+    //   swerve.resetOdometry(new Pose2d(0, 0, new Rotation2d(-Math.PI / 2)));
+    // } else {
+    //   swerve.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.PI / 2)));
+    // }
   }
 
 }

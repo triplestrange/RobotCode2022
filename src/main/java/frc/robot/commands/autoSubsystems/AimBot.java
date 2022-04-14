@@ -32,7 +32,10 @@ public class AimBot extends CommandBase {
   public void execute() {
     double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
 
-    turret.turretVision();
+    // for non-moving
+    // turret.turretVision();
+    // for moving
+    turret.shootMove();
     if (hood.getExtended()) {
       if (ty > 5) {
         hood.setHood(0);

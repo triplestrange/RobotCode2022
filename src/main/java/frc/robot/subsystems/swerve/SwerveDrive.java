@@ -60,6 +60,7 @@ public class SwerveDrive extends SubsystemBase {
   private SwerveModuleState[] swerveModuleStates;
   private SwerveModuleState[] initStates;
   private double horPos;
+  public ChassisSpeeds currentMovement;
 
   // The gyro sensor
   private static final Gyro navX = new AHRS(SPI.Port.kMXP);
@@ -144,6 +145,12 @@ public class SwerveDrive extends SubsystemBase {
     } else {
       horPos = (hub - height) / Math.tan(Math.toRadians(ty + 35.5 + 12)) + 0.6;
     }
+
+    currentMovement = SwerveConstants.kDriveKinematics.toChassisSpeeds(
+      m_frontLeft.getState(),
+      m_rearLeft.getState(),
+      m_frontRight.getState(),
+      m_rearRight.getState());
 
     SmartDashboard.putNumber("goalDist", horPos);
   }
