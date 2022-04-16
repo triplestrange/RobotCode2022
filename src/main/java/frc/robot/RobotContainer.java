@@ -8,7 +8,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,6 +23,12 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.autoSubsystems.*;
 import frc.robot.Constants.JoystickButtons;
 import frc.robot.Constants.Shooting;
+
+import com.revrobotics.ColorSensorV3;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -77,6 +85,20 @@ public class RobotContainer {
     choose.addOption("Surprise", new SixBall(swerve, intake, conveyor, hood, turret, shooter));
     SmartDashboard.putBoolean("Blind me", true);
 
+    // Creates UsbCamera and MjpegServer [1] and connects them
+    CameraServer.startAutomaticCapture();
+
+    // Creates the CvSink and connects it to the UsbCamera
+    CvSink cvSink = CameraServer.getVideo();
+
+    // Creates the CvSource and MjpegServer [2] and connects them
+    CvSource outputStream = CameraServer.putVideo("Blur", 640, 480);
+
+    I2C.Port i2cPort = I2C.Port.kOnboard;
+
+    ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+
+
   }
 
   /**
@@ -116,7 +138,7 @@ public class RobotContainer {
     JoystickButtons.oplWing.whenPressed(new InstantCommand(
         () -> hood.toggleHood()));
 
-    // JoystickButtons.opA.whenPressed(new AutoClimb(swerve, climb, 0));
+    JoystickButtons.opA.whenPressed(new AutoClimb(swerve, climb, 0));
 
     // toggle climb
     JoystickButtons.oprBump.whenPressed(new InstantCommand(climb::toggle, climb));

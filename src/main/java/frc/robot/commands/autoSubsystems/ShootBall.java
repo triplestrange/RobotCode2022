@@ -36,16 +36,24 @@ public class ShootBall extends CommandBase {
   public void execute() {
     boolean extended = SmartDashboard.getBoolean("HoodExtended", false);
     double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0);
-    if (shooter.atSpeed() && ty != 0) {
+    // for shooting while stopped
+    // if (shooter.atSpeed() && ty != 0) {
+    //   conveyor.runConveyor();
+    // } else {
+    //   conveyor.autoConveyor();
+    // }
+
+    // if (!extended) {
+    //   shooter.visionShootShort();
+    // } else {
+    //   shooter.visionShootLong();
+    // }
+
+    shooter.setShooter(3000);
+    if (Math.abs(SmartDashboard.getNumber("ShooterSpeed", 0.0) - 3000)/3000.0 < 0.05) {
       conveyor.runConveyor();
     } else {
       conveyor.autoConveyor();
-    }
-
-    if (!extended) {
-      shooter.visionShootShort();
-    } else {
-      shooter.visionShootLong();
     }
   }
 

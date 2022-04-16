@@ -213,12 +213,15 @@ public class Turret extends SubsystemBase {
     double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0);
 
     double speed = Math.hypot(currentMovement.vxMetersPerSecond, currentMovement.vyMetersPerSecond);
+    
     double goalRelativeSpeed = speed * Math.cos(Math.atan2(currentMovement.vyMetersPerSecond,
                                                            currentMovement.vxMetersPerSecond)
-                                - Math.toRadians(turretEncoder.getPosition() - tx - 90));
+                                - Math.toRadians(turretEncoder.getPosition() - tx + 90));
+    double goalDist = SmartDashboard.getNumber("goalDist", 0.0);
+
     // m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
 
-    m_turretPIDController.setReference(tx * 0.04 - goalRelativeSpeed * 0.1, ControlType.kDutyCycle);
+    m_turretPIDController.setReference(tx * 0.04 + goalRelativeSpeed * 0.173 * goalDist, ControlType.kDutyCycle);
     SmartDashboard.putNumber("goalRelSpeed", goalRelativeSpeed);
   }
 
