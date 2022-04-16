@@ -4,10 +4,12 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -28,28 +30,31 @@ public class Climber extends SubsystemBase {
   private NetworkTable table;
   private double speedL, speedR;
   private boolean extended;
+  private SparkMaxPIDController m_pidController1, m_pidController2;
 
   /** Creates a new Climber. */
-  public Climber() {  
+  public Climber() {
 
     motor2 = new CANSparkMax(Electrical.climbR, MotorType.kBrushless);
     motor1 = new CANSparkMax(Electrical.climbL, MotorType.kBrushless);
     motor1.restoreFactoryDefaults();
     motor2.restoreFactoryDefaults();
-    motor1.enableSoftLimit(SoftLimitDirection.kForward , false);
+    motor1.setIdleMode(IdleMode.kBrake);
+    motor2.setIdleMode(IdleMode.kBrake);
+    motor1.enableSoftLimit(SoftLimitDirection.kForward, false);
     // motor1.setSoftLimit(SoftLimitDirection.kForward, 9.93f);
     motor1.enableSoftLimit(SoftLimitDirection.kReverse, false);
     // motor1.setSoftLimit(SoftLimitDirection.kReverse, 9.93f);
-    motor2.enableSoftLimit(SoftLimitDirection.kForward , false);
+    motor2.enableSoftLimit(SoftLimitDirection.kForward, false);
     // motor2.setSoftLimit(SoftLimitDirection.kForward, -5.80f);
     motor2.enableSoftLimit(SoftLimitDirection.kReverse, false);
     // motor2.setSoftLimit(SoftLimitDirection.kReverse, -5.80f);
-    solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 9); 
+    solenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 6, 9);
     solenoid.set(Value.kReverse);
     extended = solenoid.get() == Value.kForward;
 
-    motor1.setSmartCurrentLimit(60);
-    motor2.setSmartCurrentLimit(60);
+    // motor1.setSmartCurrentLimit(60);
+    // motor2.setSmartCurrentLimit(60);
 
     motor1.burnFlash();
     motor2.burnFlash();
@@ -61,6 +66,16 @@ public class Climber extends SubsystemBase {
 
     periodic();
 
+    m_pidController1 = motor1.getPIDController();
+    m_pidController2 = motor2.getPIDController();
+
+    m_pidController1.setP(1);
+    m_pidController1.setI(0);
+    m_pidController1.setD(1);
+    m_pidController2.setP(1);
+    m_pidController2.setI(0);
+    m_pidController2.setD(1);
+
     // LiveWindow
     addChild("Right", solenoid);
   }
@@ -70,24 +85,34 @@ public class Climber extends SubsystemBase {
   }
 
   public void toggle() {
-    // if (solenoid.get() == Value.kReverse) {
-    //   solenoid.set(Value.kForward);
-    // } else {
-    //   solenoid.set(Value.kReverse);
-    // }
     solenoid.toggle();
   }
 
   public void extend() {
-    solenoid.set(Value.kReverse);
+    solenoid.set(Value.kForward);
   }
 
   public void retract() {
-    solenoid.set(Value.kForward);
+    solenoid.set(Value.kReverse);
   }
 
   public void moveLeft() {
     motor2.set(speedL);
+  }
+
+  public void setRight(double setpoint) {
+    m_pidController1.setReference(setpoint, ControlType.kPosition);
+  }
+
+  public void setLeft(double setpoint) {
+    m_pidController2.setReference(setpoint, ControlType.kPosition);
+  }
+
+  public void moveLeft(double speed) {
+    motor2.set(speed);
+  }
+  public void moveRight(double speed) {
+    motor1.set(speed);
   }
 
   public void stop() {
@@ -104,9 +129,9 @@ public class Climber extends SubsystemBase {
   }
 
   public void initDefaultCommand() {
-    
+
   }
-   
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

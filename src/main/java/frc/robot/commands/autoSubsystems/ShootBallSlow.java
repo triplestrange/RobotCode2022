@@ -15,16 +15,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ShootBallSlow extends CommandBase {
   private Shooter shooter;
   private Conveyor conveyor;
+
   /** Creates a new ShootBall. */
   public ShootBallSlow(Shooter shooter, Conveyor conveyor) {
     addRequirements(shooter, conveyor);
-    this.shooter = shooter; 
+    this.shooter = shooter;
     this.conveyor = conveyor;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

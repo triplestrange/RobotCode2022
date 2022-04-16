@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -14,13 +15,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Hood extends SubsystemBase {
   private final DoubleSolenoid hoodPiston;
   private boolean isExtended;
+
   /** Creates a new Hood. */
   public Hood() {
-    hoodPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, 7, 8);
+    hoodPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, 8, 7);
     hoodPiston.set(Value.kReverse);
 
     addChild("Hood", hoodPiston);
   }
+
   public void setHood(int pos) {
     if (pos == 0) {
       hoodPiston.set(Value.kReverse);
@@ -47,19 +50,6 @@ public class Hood extends SubsystemBase {
     isExtended = val;
   }
 
-  // public boolean autoHood() {
-  //   boolean tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getBoolean(false);
-  //   double ty = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0.0);
-
-  //   if (tv && ty < -15.0 && !getExtended()) {
-  //     setHood(1);
-  //     return true;
-  //   } else if (tv && ) {
-  //     setHood(0);
-  //     return false;
-  //   }
-  // }
-  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

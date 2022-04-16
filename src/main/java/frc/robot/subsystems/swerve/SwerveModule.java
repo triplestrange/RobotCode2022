@@ -6,7 +6,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.swerve;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.subsystems.swerve.AbsoluteEncoder;
 
 public class SwerveModule {
   // motors
@@ -36,7 +37,7 @@ public class SwerveModule {
   private SparkMaxPIDController m_pidController;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
 
-  //drive pid
+  // drive pid
   // private CANPIDController m_drivepidController;
   // public double dkP, dkI, dkD, dkIz, dkFF, dkMaxOutput, dkMinOutput;
 
@@ -46,8 +47,8 @@ public class SwerveModule {
    * @param driveMotorChannel   ID for the drive motor.
    * @param turningMotorChannel ID for the turning motor.
    */
-  public SwerveModule(int driveMotorChannel, int turningMotorChannel, int absoluteEncoderChannel, double encoderCPR, boolean turningEncoderReversed, double angleOffset) {
-
+  public SwerveModule(int driveMotorChannel, int turningMotorChannel, int absoluteEncoderChannel, double encoderCPR,
+      boolean turningEncoderReversed, double angleOffset) {
 
     m_driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     m_turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
@@ -61,9 +62,10 @@ public class SwerveModule {
 
     // Set the distance per pulse for the drive encoder. We can simply use the
     // distance traveled for one rotation of the wheel divided by the encoder
-    // resolution (ratio of distance traveled by wheel to distance traveled by encoder shaft)
+    // resolution (ratio of distance traveled by wheel to distance traveled by
+    // encoder shaft)
     m_driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderDistancePerPulse);
-    m_driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderDistancePerPulse/60.);
+    m_driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderDistancePerPulse / 60.);
 
     // Set whether drive encoder should be reversed or not
 
@@ -71,7 +73,7 @@ public class SwerveModule {
     // This is the the angle through an entire rotation (2 * wpi::math::pi)
     // divided by the encoder resolution.
     m_turningEncoder.setPositionConversionFactor(ModuleConstants.kSteerEncoderDistancePerPulse);
-    m_turningEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderDistancePerPulse/60.);
+    m_turningEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderDistancePerPulse / 60.);
     // m_absoluteEncoder.setPositionConversionFactor(encoderCPR);
 
     // Limit the PID Controller's input range between -pi and pi and set the input
@@ -79,7 +81,7 @@ public class SwerveModule {
     // m_turningPIDController.enableContinuousInput(0, 2*Math.PI);
 
     // PID coefficients
-    kP = 0.5;
+    kP = 2; // 0.5
     kI = 0;
     kD = 0;
     kIz = 0;
@@ -97,7 +99,7 @@ public class SwerveModule {
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
     m_driveMotor.setSmartCurrentLimit(40);
-    m_turningMotor.setSmartCurrentLimit(30);
+    m_turningMotor.setSmartCurrentLimit(40);
     m_driveMotor.setIdleMode(IdleMode.kBrake);
     m_turningMotor.setIdleMode(IdleMode.kBrake);
 
@@ -111,7 +113,9 @@ public class SwerveModule {
    * @return The current state of the module.
    */
   public SwerveModuleState getState() {
-    return new SwerveModuleState(m_driveEncoder.getVelocity() + m_turningEncoder.getVelocity()*ModuleConstants.kWheelDiameterMeters/2, new Rotation2d(m_turningEncoder.getPosition()));
+    return new SwerveModuleState(
+        m_driveEncoder.getVelocity() + m_turningEncoder.getVelocity() * ModuleConstants.kWheelDiameterMeters / 2,
+        new Rotation2d(m_turningEncoder.getPosition()));
   }
 
   /**
@@ -121,7 +125,7 @@ public class SwerveModule {
    */
   public void setDesiredState(SwerveModuleState state) {
 
-    double desiredDrive = state.speedMetersPerSecond/Constants.SwerveConstants.kMaxSpeedMetersPerSecond;
+    double desiredDrive = state.speedMetersPerSecond / Constants.SwerveConstants.kMaxSpeedMetersPerSecond;
 
     if (Math.abs(desiredDrive) < 0.05) {
       m_driveMotor.set(0);
@@ -161,9 +165,9 @@ public class SwerveModule {
   /**
    * Physically zeroes wheel. (i hope)
    */
-  public void resetWheel() {    
+  public void resetWheel() {
     m_driveMotor.set(0);
     m_pidController.setReference(0, ControlType.kPosition);
-    
+
   }
 }
