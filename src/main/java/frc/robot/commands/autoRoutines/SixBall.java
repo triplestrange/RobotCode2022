@@ -155,7 +155,7 @@ public class SixBall extends SequentialCommandGroup {
         .andThen(new RunCommand(() -> {
           hood.setHood(1);
           shooter.visionShootLong();
-          if (shooter.atSpeed()) {
+          if (shooter.atSpeed() && turret.checkTurret()) {
             conveyor.runConveyor();
           } else {
             conveyor.autoConveyor();
@@ -172,7 +172,7 @@ public class SixBall extends SequentialCommandGroup {
         }))
         .andThen(new RunCommand(() -> {
           shooter.visionShootLong();
-          if (shooter.atSpeed()) {
+          if (shooter.atSpeed() && turret.checkTurret()) {
             conveyor.runConveyor();
           } else {
             conveyor.autoConveyor();

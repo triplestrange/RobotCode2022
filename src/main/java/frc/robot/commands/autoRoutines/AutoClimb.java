@@ -83,10 +83,16 @@ public class AutoClimb extends SequentialCommandGroup {
     
     addCommands(new RunCommand(() -> {
       climb.setLeft(-195);
-    }, climb).withInterrupt(new BooleanSupplier() {
-      public boolean getAsBoolean() {
-        return true;
-      }
-    }));
+    }, climb).withTimeout(2)
+    .andThen(new RunCommand(() -> {
+      climb.setLeft(-5);
+    }, climb).withTimeout(2)));
+    // .andThen(new InstantCommand(climb::toggle, climb)));
+    // addCommands(new RunCommand(() -> {
+    //   climb.setRight(3);
+    // }, climb));
+    // addCommands(new RunCommand(() -> {
+    //   climb.setRight(195);
+    // }, climb));
   }
 }

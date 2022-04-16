@@ -148,7 +148,7 @@ public class TwoBall extends SequentialCommandGroup {
         .andThen(new RunCommand(() -> {
           hood.setHood(1);
           shooter.visionShootLong();
-          if (shooter.atSpeed()) {
+          if (shooter.atSpeed() && turret.checkTurret()) {
             conveyor.runConveyor();
           } else {
             conveyor.autoConveyor();

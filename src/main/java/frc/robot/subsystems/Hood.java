@@ -18,7 +18,7 @@ public class Hood extends SubsystemBase {
 
   /** Creates a new Hood. */
   public Hood() {
-    hoodPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, 7, 8);
+    hoodPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, 8, 7);
     hoodPiston.set(Value.kReverse);
 
     addChild("Hood", hoodPiston);

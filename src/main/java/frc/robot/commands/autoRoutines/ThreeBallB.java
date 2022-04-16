@@ -144,7 +144,7 @@ public class ThreeBallB extends SequentialCommandGroup {
         .andThen(new RunCommand(() -> {
           hood.setHood(1);
           shooter.visionShootLong();
-          if (shooter.atSpeed()) {
+          if (shooter.atSpeed() && turret.checkTurret()) {
             conveyor.runConveyor();
           } else {
             conveyor.stopConveyor();
@@ -163,7 +163,7 @@ public class ThreeBallB extends SequentialCommandGroup {
         }))
         .andThen(new RunCommand(() -> {
           shooter.visionShootLong();
-          if (shooter.atSpeed()) {
+          if (shooter.atSpeed() && turret.checkTurret()) {
             conveyor.runConveyor();
           }
         }).withTimeout(3))

@@ -133,6 +133,7 @@ public class FiveBall extends SequentialCommandGroup {
 
     );
 
+    // IMPORTANT: take out checkTurret() if things go wrong
     Command fiveBall = new InstantCommand(() -> {
       shooter.setShooter(Constants.Shooting.idleSpeed);
       intake.setIntake(1);
@@ -143,7 +144,7 @@ public class FiveBall extends SequentialCommandGroup {
         .andThen(new RunCommand(() -> {
           hood.setHood(1);
           shooter.visionShootLong();
-          if (shooter.atSpeed()) {
+          if (shooter.atSpeed() && turret.checkTurret()) {
             conveyor.runConveyor();
           } else {
             conveyor.autoConveyor();
@@ -160,7 +161,7 @@ public class FiveBall extends SequentialCommandGroup {
         }))
         .andThen(new RunCommand(() -> {
           shooter.visionShootLong();
-          if (shooter.atSpeed()) {
+          if (shooter.atSpeed() && turret.checkTurret()) {
             conveyor.runConveyor();
           } else {
             conveyor.autoConveyor();
@@ -178,7 +179,7 @@ public class FiveBall extends SequentialCommandGroup {
         .andThen(new RunCommand(() -> {
           swerve.drive(0, 0, 0, true);
           shooter.visionShootLong();
-          if (shooter.atSpeed()) {
+          if (shooter.atSpeed() && turret.checkTurret()) {
             conveyor.runConveyor();
           } else {
             conveyor.autoConveyor();

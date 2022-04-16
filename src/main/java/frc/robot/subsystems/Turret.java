@@ -74,7 +74,8 @@ public class Turret extends SubsystemBase {
     kP = 0.35;
     kFF = 1. / 11000.;
     kI = 0;
-    kD = 0.0005;
+    // TODO: try taking out to stop swiveling
+    kD = 0; //0.0005;
     kIz = 0;
     kMaxOutput = 1;
     kMinOutput = -1;
@@ -97,13 +98,31 @@ public class Turret extends SubsystemBase {
   public void turretVision() {
     double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
     double dTheta = SmartDashboard.getNumber("TurnRate", 0.0);
+    String matchColor = SmartDashboard.getString("DriverStation", "Red");
+    String detectedColor = SmartDashboard.getString("Detected Color", matchColor);
+    String notColor = "unknown";
+    double offset = 0;
+
+    if (matchColor.equals("Blue")) {
+      notColor = "Red";
+    } else if (matchColor.equals("Red")) {
+      notColor = "Blue";
+    }
 
     if (!turnaround1 && !turnaround2) {
       if (tx != 0) {
+        if (detectedColor.equals(notColor) &&
+            SmartDashboard.getBoolean("RejectOpps", true)
+            && !SmartDashboard.getBoolean("BotEmpty", true)) {
+              SmartDashboard.putBoolean("RejectingBall", true);
+              m_turretPIDController.setReference((tx + 17) * 0.04, ControlType.kDutyCycle);
+        } else {
         // for non-moving
+        SmartDashboard.putBoolean("RejectingBall", false);
         m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
         // for moving
         // m_turretPIDController.setReference(tx * 0.02 - dTheta, ControlType.kDutyCycle);
+        }
       } else {
         faceGoalOdometry();
         // make it always face the goal
@@ -182,6 +201,27 @@ public class Turret extends SubsystemBase {
         ControlType.kPosition);
   }
 
+  public boolean checkTurret() {
+    boolean turretGood = true;
+    if (SmartDashboard.getBoolean("RejectingBall", false)) {
+      if (Math.abs(SmartDashboard.getNumber("tx", 0.0)) > 16
+        && Math.abs(SmartDashboard.getNumber("TurretVelocity", 0.0)) < 1000 ) {
+        turretGood = true;
+      } else {
+        turretGood = false;
+      }
+    } else {
+      if (Math.abs(SmartDashboard.getNumber("tx", 0.0)) < 1.5
+      && Math.abs(SmartDashboard.getNumber("TurretVelocity", 0.0)) < 1000) {
+        turretGood = true;
+      } else {
+        turretGood  = false;
+      }
+    }
+
+    return turretGood;
+  }
+
   // need to know:
   // - where robot is
   //   - know where goal is in relation
@@ -214,12 +254,10 @@ public class Turret extends SubsystemBase {
 
     double speed = Math.hypot(currentMovement.vxMetersPerSecond, currentMovement.vyMetersPerSecond);
     
-    double goalRelativeSpeed = speed * Math.cos(Math.atan2(currentMovement.vyMetersPerSecond,
+    double goalRelativeSpeed = speed * Math.cos(Math.atan2(-currentMovement.vyMetersPerSecond,
                                                            currentMovement.vxMetersPerSecond)
                                 - Math.toRadians(turretEncoder.getPosition() - tx + 90));
     double goalDist = SmartDashboard.getNumber("goalDist", 0.0);
-
-    // m_turretPIDController.setReference(tx * 0.04, ControlType.kDutyCycle);
 
     m_turretPIDController.setReference(tx * 0.04 + goalRelativeSpeed * 0.173 * goalDist, ControlType.kDutyCycle);
     SmartDashboard.putNumber("goalRelSpeed", goalRelativeSpeed);
@@ -279,6 +317,7 @@ public class Turret extends SubsystemBase {
 
     pose = RobotContainer.swerve.getPoseTur();
     SmartDashboard.putNumber("TurretVelocity", turretEncoder.getVelocity());
+    SmartDashboard.putBoolean("Turret Good?", checkTurret());
 
   }
 }

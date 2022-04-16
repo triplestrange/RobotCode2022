@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.XboxController;
@@ -24,6 +25,7 @@ import frc.robot.commands.autoSubsystems.*;
 import frc.robot.Constants.JoystickButtons;
 import frc.robot.Constants.Shooting;
 
+import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -49,6 +51,7 @@ public class RobotContainer {
   private final Climber climb;
   private final Hood hood;
   private final SendableChooser<Command> choose;
+  public static final SendableChooser<String> color = new SendableChooser<String>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -83,22 +86,17 @@ public class RobotContainer {
     choose.addOption("ThreeBall - regular", new ThreeBallB(swerve, intake, conveyor, hood, turret, shooter));
     choose.addOption("FiveBall - regular", new FiveBall(swerve, intake, conveyor, hood, turret, shooter));
     choose.addOption("Surprise", new SixBall(swerve, intake, conveyor, hood, turret, shooter));
+
     SmartDashboard.putBoolean("Blind me", true);
 
-    // Creates UsbCamera and MjpegServer [1] and connects them
     CameraServer.startAutomaticCapture();
 
-    // Creates the CvSink and connects it to the UsbCamera
-    CvSink cvSink = CameraServer.getVideo();
+    SmartDashboard.putString("DriverStation", DriverStation.getAlliance().toString());
 
-    // Creates the CvSource and MjpegServer [2] and connects them
-    CvSource outputStream = CameraServer.putVideo("Blur", 640, 480);
-
-    I2C.Port i2cPort = I2C.Port.kOnboard;
-
-    ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
-
-
+    SmartDashboard.putString("Event", DriverStation.getEventName());
+    SmartDashboard.putNumber("Match #", DriverStation.getMatchNumber());
+    SmartDashboard.putString("Match #", DriverStation.getMatchType().toString());
+    SmartDashboard.putBoolean("RejectOpps", true);
   }
 
   /**
@@ -110,7 +108,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configButtons() {
-
     // DRIVER
     // regular default driving
     // reset gyro is left wing
@@ -143,7 +140,6 @@ public class RobotContainer {
     // toggle climb
     JoystickButtons.oprBump.whenPressed(new InstantCommand(climb::toggle, climb));
 
-    SmartDashboard.putBoolean("Shooting", JoystickButtons.drBump.getAsBoolean());
   }
 
   public void configDefaults() {
@@ -174,6 +170,9 @@ public class RobotContainer {
         conveyor.runConveyor(0.75);
       } else {
         conveyor.stopConveyor();
+        if (!conveyor.empty()) {
+          conveyor.autoConveyor();
+        }
       }
     }, conveyor));
     climb.setDefaultCommand(new RunCommand(() -> {
