@@ -53,9 +53,10 @@ public class Shooter extends SubsystemBase {
 
     m_encoder = shooter1.getEncoder();
 
-    kP = 0.0002;
+    kP = 0.00025;
     kI = 0.0000001;
     kD = 0.0000006;
+
     // units - rpm
     kIz = 250;
     // kFF = 0;

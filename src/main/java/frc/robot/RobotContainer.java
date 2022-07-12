@@ -114,6 +114,7 @@ public class RobotContainer {
     // shoot ball
     JoystickButtons.drBump.whileHeld(new ShootBall(shooter, conveyor));
     JoystickButtons.drBump.whenReleased(new InstantCommand(conveyor::stopConveyor, conveyor));
+    JoystickButtons.drBump.whenReleased(new InstantCommand(shooter::stopShooter, shooter));
     JoystickButtons.dlBump.whileHeld(new ShootBallSlow(shooter, conveyor));
     JoystickButtons.dlBump.whenReleased(new InstantCommand(conveyor::stopConveyor, conveyor));
     // manual turret
